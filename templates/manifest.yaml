@@ -1,0 +1,47 @@
+# Machine-readable project manifest template.
+# Fill from observed repository evidence only. Leave a field commented
+# out or set to "unknown" rather than guessing.
+#
+# Rules:
+# - no credentials
+# - no secrets
+# - no tokens
+# - no passwords
+# - no private keys
+# - no tenant/subscription IDs unless the project explicitly requires
+#   recording them in a non-secret, already-public-within-the-org form
+
+schema_version: 1
+
+project:
+  name: "<project-name>"
+  type: "data-platform" # e.g. data-platform, reporting, ingestion-service
+
+platform:
+  primary: "microsoft-fabric" # or: azure, other
+
+source_control:
+  provider: "unknown" # e.g. github, azure-devops
+
+environments: []
+  # - dev
+  # - test
+  # - prod
+
+components:
+  lakehouse: false
+  warehouse: false
+  spark: false
+  semantic_models: false
+
+modelling:
+  analytical_standard: "kimball" # default; change only with justification
+
+documentation:
+  architecture: ".ai/ARCHITECTURE.md"
+  data_model: ".ai/DATA-MODEL.md"
+  glossary: ".ai/GLOSSARY.md"
+
+# The Repository Analyst should periodically compare this manifest
+# against the observed repository state and report drift rather than
+# assume the manifest stays accurate indefinitely.

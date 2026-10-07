@@ -1,0 +1,41 @@
+# `/review-pr`
+
+## Purpose
+
+Review a diff/branch/PR as a senior/principal engineer would, focused on
+production risk.
+
+## Expected Inputs
+
+- The diff/branch/PR to review.
+- The original request/ticket and implementation plan, if available.
+
+## Skills / Roles Invoked
+
+- [Reviewer agent](../agents/reviewer.agent.md) via
+  [`code-review`](../skills/code-review/SKILL.md).
+- [`kimball-review`](../skills/kimball-review/SKILL.md), if a dimensional
+  model is touched.
+- [`testing`](../skills/testing/SKILL.md), to assess test adequacy.
+
+## Ordered Execution Steps
+
+1. Read the full diff.
+2. Run the [`code-review`](../skills/code-review/SKILL.md) procedure.
+3. If a dimensional model or semantic model is touched, also run
+   [`kimball-review`](../skills/kimball-review/SKILL.md).
+4. Assess test adequacy via [`testing`](../skills/testing/SKILL.md).
+5. Aggregate findings, most severe first, with an overall recommendation.
+
+## Expected Output
+
+Findings list (Severity, Location, Evidence, Impact, Recommended fix,
+Confidence per finding — see the
+[severity model](../skills/code-review/SKILL.md#severity-model)) plus an
+overall recommendation: ready to proceed / needs changes / blocked.
+
+## Safety Constraints
+
+- Read-only. This command never modifies the diff/branch, approves, or
+  merges anything.
+- Any committed secret is reported as Critical without exception.
