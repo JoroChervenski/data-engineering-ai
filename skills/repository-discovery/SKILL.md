@@ -1,3 +1,10 @@
+---
+name: repository-discovery
+description: "Evidence-based inventory of a repository before any architecture or implementation decision. Use when the repository or the relevant area has not been inspected in this session, before architecture-assessment, implementation-plan or bootstrap-project, or when previously observed structure may be stale."
+---
+
+> **Claude Code plugin:** the framework is installed at `${CLAUDE_PLUGIN_ROOT}`. Relative links in this file resolve from `${CLAUDE_PLUGIN_ROOT}/skills/repository-discovery/`; read linked agents, skills, standards and templates from there. The repository being worked on is the current working directory, never the framework folder.
+
 # Repository Discovery
 
 ## Purpose
@@ -11,7 +18,7 @@ projects.
 
 - The repository (or the relevant area of it) has not been inspected in
   the current working session.
-- Before [`architecture-review`](../architecture-review/SKILL.md),
+- Before [`architecture-assessment`](../architecture-assessment/SKILL.md),
   [`implementation-plan`](../implementation-plan/SKILL.md), or
   [`/bootstrap-project`](../../commands/bootstrap-project.md).
 - Whenever there is reason to doubt that previously observed structure is

@@ -2,7 +2,7 @@
 
 Engineering principles for evaluating and designing architecture. Used by
 the [Architect agent](../agents/architect.agent.md) and the
-[`architecture-review`](../skills/architecture-review/SKILL.md) skill.
+[`architecture-assessment`](../skills/architecture-assessment/SKILL.md) skill.
 
 ## Principles
 

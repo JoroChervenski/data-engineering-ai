@@ -1,3 +1,10 @@
+---
+name: pull-request
+description: "Build a PR description from the actual diff, test results and review findings rather than from the original request. Use near the end of a task, after implementation and review are complete."
+---
+
+> **Claude Code plugin:** the framework is installed at `${CLAUDE_PLUGIN_ROOT}`. Relative links in this file resolve from `${CLAUDE_PLUGIN_ROOT}/skills/pull-request/`; read linked agents, skills, standards and templates from there. The repository being worked on is the current working directory, never the framework folder.
+
 # Pull Request Preparation
 
 ## Purpose

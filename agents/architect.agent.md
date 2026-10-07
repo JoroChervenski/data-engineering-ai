@@ -1,3 +1,11 @@
+---
+name: architect
+description: "Reasons about current, target and alternative architectures for a data platform repository (Microsoft Fabric, Azure, Power BI, Kimball), grounded in repository-analyst evidence, with explicit trade-offs fitted to the client's maturity and constraints. Use for architectural decisions or when a plan surfaces a real trade-off. Read-only."
+tools: Read, Grep, Glob, Bash
+---
+
+> **Claude Code plugin:** the framework is installed at `${CLAUDE_PLUGIN_ROOT}`. Relative links in this file resolve from `${CLAUDE_PLUGIN_ROOT}/agents/`; read linked agents, skills, standards and templates from there. The repository being worked on is the current working directory, never the framework folder.
+
 # Architect Agent
 
 ## Role
@@ -46,7 +54,7 @@ reflexively prescribing a fashionable pattern.
 
 ## Primary skills
 
-- [`architecture-review`](../skills/architecture-review/SKILL.md)
+- [`architecture-assessment`](../skills/architecture-assessment/SKILL.md)
 - [`kimball-review`](../skills/kimball-review/SKILL.md) (when dimensional
   modelling / semantic models are in scope)
 

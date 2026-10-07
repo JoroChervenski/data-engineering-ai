@@ -1,3 +1,10 @@
+---
+name: code-review
+description: "Senior/principal-level review of a diff, branch or PR focused on production risk, using the framework severity model (Critical/High/Medium/Low/Suggestion). Use after implementation, before work is considered complete or a PR is prepared."
+---
+
+> **Claude Code plugin:** the framework is installed at `${CLAUDE_PLUGIN_ROOT}`. Relative links in this file resolve from `${CLAUDE_PLUGIN_ROOT}/skills/code-review/`; read linked agents, skills, standards and templates from there. The repository being worked on is the current working directory, never the framework folder.
+
 # Code Review
 
 ## Purpose

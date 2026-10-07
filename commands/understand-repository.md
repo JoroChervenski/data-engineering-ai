@@ -1,3 +1,10 @@
+---
+description: "Run repository discovery and return a structured project model, without recommendations or changes"
+argument-hint: "[area of interest]"
+---
+
+> **Claude Code plugin:** the framework is installed at `${CLAUDE_PLUGIN_ROOT}`. Relative links in this file resolve from `${CLAUDE_PLUGIN_ROOT}/commands/`; read linked agents, skills, standards and templates from there. The repository being worked on is the current working directory, never the framework folder.
+
 # `/understand-repository`
 
 ## Purpose
@@ -39,3 +46,7 @@ or Unknown.
 - Read-only. No files are modified.
 - No architecture recommendation is made here — that belongs to
   [`/architecture-review`](architecture-review.md).
+
+## Request
+
+$ARGUMENTS

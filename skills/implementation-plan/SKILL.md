@@ -1,3 +1,10 @@
+---
+name: implementation-plan
+description: "Concise implementation plan for a non-trivial data engineering change (objective, affected files, architecture/data-model/security/performance impact, backward compatibility, testing, deployment, open questions) before code is written. Use before implementing any change that is not trivially low-risk."
+---
+
+> **Claude Code plugin:** the framework is installed at `${CLAUDE_PLUGIN_ROOT}`. Relative links in this file resolve from `${CLAUDE_PLUGIN_ROOT}/skills/implementation-plan/`; read linked agents, skills, standards and templates from there. The repository being worked on is the current working directory, never the framework folder.
+
 # Implementation Plan
 
 ## Purpose
@@ -95,5 +102,5 @@ inspection, not guessed from a similar past change.
 
 If the plan reveals a real architectural trade-off, hand off to the
 [Architect agent](../../agents/architect.agent.md) via
-[`architecture-review`](../architecture-review/SKILL.md) before
+[`architecture-assessment`](../architecture-assessment/SKILL.md) before
 implementation proceeds.

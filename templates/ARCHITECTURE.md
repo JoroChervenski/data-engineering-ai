@@ -1,6 +1,6 @@
 # Architecture: <project-name>
 
-<!-- Produced by repository-discovery + architecture-review. Separate
+<!-- Produced by repository-discovery + architecture-assessment. Separate
      Observed from Inferred. Do not invent components that were not
      actually found. -->
 

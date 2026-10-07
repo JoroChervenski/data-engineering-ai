@@ -1,3 +1,10 @@
+---
+description: "Evidence-driven incident / root-cause analysis for a reported symptom"
+argument-hint: "<symptom description>"
+---
+
+> **Claude Code plugin:** the framework is installed at `${CLAUDE_PLUGIN_ROOT}`. Relative links in this file resolve from `${CLAUDE_PLUGIN_ROOT}/commands/`; read linked agents, skills, standards and templates from there. The repository being worked on is the current working directory, never the framework folder.
+
 # `/investigate`
 
 ## Purpose
@@ -41,3 +48,7 @@ Prevention, per the incident-analysis skill's output format.
 - No hypothesis is reported as "root cause" without an attempted
   falsification test.
 - A fix is not implemented as part of this command; it is handed off.
+
+## Request
+
+$ARGUMENTS

@@ -1,3 +1,10 @@
+---
+name: architecture-assessment
+description: "Qualitative, evidence-grounded assessment of a repository's current architecture, risks and credible target/alternative architectures with trade-offs. Use before significant architectural changes or when comparing current vs. target designs; requires repository-discovery output."
+---
+
+> **Claude Code plugin:** the framework is installed at `${CLAUDE_PLUGIN_ROOT}`. Relative links in this file resolve from `${CLAUDE_PLUGIN_ROOT}/skills/architecture-assessment/`; read linked agents, skills, standards and templates from there. The repository being worked on is the current working directory, never the framework folder.
+
 # Architecture Review
 
 ## Purpose

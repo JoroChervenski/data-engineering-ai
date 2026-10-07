@@ -1,3 +1,10 @@
+---
+name: orchestrator
+description: "Entry point for data engineering requests in a client repository: classifies the request, checks for the .ai/ overlay, picks the smallest sufficient set of framework agents/skills, plans the execution order and enforces the review gate. Use when a request spans several roles (discovery, architecture, implementation, review). Does not do specialist work itself."
+---
+
+> **Claude Code plugin:** the framework is installed at `${CLAUDE_PLUGIN_ROOT}`. Relative links in this file resolve from `${CLAUDE_PLUGIN_ROOT}/agents/`; read linked agents, skills, standards and templates from there. The repository being worked on is the current working directory, never the framework folder.
+
 # Orchestrator Agent
 
 ## Role

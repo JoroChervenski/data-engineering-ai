@@ -1,3 +1,10 @@
+---
+name: incident-analysis
+description: "Evidence-driven root-cause analysis for a production data incident (failed job, wrong numbers, missing records) without jumping from symptom to claimed cause. Use when a reported symptom needs a diagnosed cause before a fix is proposed."
+---
+
+> **Claude Code plugin:** the framework is installed at `${CLAUDE_PLUGIN_ROOT}`. Relative links in this file resolve from `${CLAUDE_PLUGIN_ROOT}/skills/incident-analysis/`; read linked agents, skills, standards and templates from there. The repository being worked on is the current working directory, never the framework folder.
+
 # Incident Analysis
 
 ## Purpose

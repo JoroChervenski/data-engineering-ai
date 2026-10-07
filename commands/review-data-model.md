@@ -1,3 +1,10 @@
+---
+description: "Review a dimensional/semantic model against Kimball and semantic-model standards"
+argument-hint: "[model, tables or path]"
+---
+
+> **Claude Code plugin:** the framework is installed at `${CLAUDE_PLUGIN_ROOT}`. Relative links in this file resolve from `${CLAUDE_PLUGIN_ROOT}/commands/`; read linked agents, skills, standards and templates from there. The repository being worked on is the current working directory, never the framework folder.
+
 # `/review-data-model`
 
 ## Purpose
@@ -42,3 +49,7 @@ Location, Evidence, Impact, Recommended fix, Confidence per the
 - Read-only. No schema or model change is made by this command directly.
 - Does not review against an assumed grain — an undeclared, unconfirmed
   grain is itself reported as a finding, not silently assumed.
+
+## Request
+
+$ARGUMENTS

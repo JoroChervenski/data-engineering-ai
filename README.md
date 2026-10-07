@@ -116,6 +116,36 @@ A small Python bug does not need every specialist invoked. The
 [Orchestrator](agents/orchestrator.agent.md) classifies the task first and
 invokes only the agents/skills the task actually requires.
 
+## Use with Claude Code
+
+This repository is also a Claude Code plugin and its own single-plugin
+marketplace (`.claude-plugin/`). Install it once at user scope, so it is
+available in every client repository without being copied into any of them:
+
+```bash
+claude plugin marketplace add JoroChervenski/data-engineering-ai
+claude plugin install data-engineering-ai@data-engineering-ai --scope user
+claude plugin marketplace update data-engineering-ai   # pull new commits
+claude plugin update data-engineering-ai@data-engineering-ai
+```
+
+Inside a client repository:
+
+- Commands are namespaced, e.g. `/data-engineering-ai:bootstrap-project`,
+  `/data-engineering-ai:plan-ticket <ticket>`,
+  `/data-engineering-ai:review-pr`.
+- Agents are available as subagents `data-engineering-ai:orchestrator`,
+  `:repository-analyst`, `:architect`, `:data-engineer`, `:reviewer`.
+- Skills load on demand when a task matches their description.
+- The client overlay (`AGENTS.md` + `.ai/`) lives in the client repository.
+  Claude Code reads `CLAUDE.md`, so add one containing `@AGENTS.md`.
+
+Each agent, skill and command starts with Claude Code frontmatter and a
+short note pointing at `${CLAUDE_PLUGIN_ROOT}`, so the relative links to
+`standards/` and `templates/` resolve from the installed plugin. The
+architecture review skill is named `architecture-assessment` so it does not
+collide with the `/architecture-review` command.
+
 ## Implementation status
 
 **Phase 1 — Foundation (current).** Minimal, coherent framework: 5 core

@@ -1,3 +1,10 @@
+---
+description: "Review a diff/branch/PR as a senior/principal engineer, focused on production risk"
+argument-hint: "[branch, PR or diff range]"
+---
+
+> **Claude Code plugin:** the framework is installed at `${CLAUDE_PLUGIN_ROOT}`. Relative links in this file resolve from `${CLAUDE_PLUGIN_ROOT}/commands/`; read linked agents, skills, standards and templates from there. The repository being worked on is the current working directory, never the framework folder.
+
 # `/review-pr`
 
 ## Purpose
@@ -39,3 +46,7 @@ overall recommendation: ready to proceed / needs changes / blocked.
 - Read-only. This command never modifies the diff/branch, approves, or
   merges anything.
 - Any committed secret is reported as Critical without exception.
+
+## Request
+
+$ARGUMENTS

@@ -1,3 +1,10 @@
+---
+description: "Produce an implementation plan for a ticket/request without changing any files"
+argument-hint: "<ticket text or ID>"
+---
+
+> **Claude Code plugin:** the framework is installed at `${CLAUDE_PLUGIN_ROOT}`. Relative links in this file resolve from `${CLAUDE_PLUGIN_ROOT}/commands/`; read linked agents, skills, standards and templates from there. The repository being worked on is the current working directory, never the framework folder.
+
 # `/plan-ticket`
 
 ## Purpose
@@ -44,3 +51,7 @@ Deployment Considerations, Open Questions.
   produces a plan.
 - Affected files/components listed must have actually been located in
   the repository, not guessed.
+
+## Request
+
+$ARGUMENTS

@@ -1,0 +1,15 @@
+{
+  "name": "data-engineering-ai",
+  "description": "Virtual Principal Data Engineering team for client repositories: agents, skills, commands, standards and templates for Microsoft Fabric, Azure, Power BI, SQL, PySpark and Kimball modelling.",
+  "author": {
+    "name": "JoroChervenski"
+  },
+  "repository": "https://github.com/JoroChervenski/data-engineering-ai",
+  "keywords": [
+    "data-engineering",
+    "microsoft-fabric",
+    "kimball",
+    "pyspark",
+    "power-bi"
+  ]
+}

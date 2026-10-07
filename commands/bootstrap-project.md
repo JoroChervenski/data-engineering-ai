@@ -1,3 +1,10 @@
+---
+description: "Create this client repository's AI overlay (AGENTS.md + .ai/) from the framework templates, grounded in discovery"
+argument-hint: "[business objective or context]"
+---
+
+> **Claude Code plugin:** the framework is installed at `${CLAUDE_PLUGIN_ROOT}`. Relative links in this file resolve from `${CLAUDE_PLUGIN_ROOT}/commands/`; read linked agents, skills, standards and templates from there. The repository being worked on is the current working directory, never the framework folder.
+
 # `/bootstrap-project`
 
 ## Purpose
@@ -64,3 +71,7 @@ questions the bootstrap could not resolve from the repository alone.
   bootstrapped.
 - Does not commit on its own; the proposed files are presented for
   review first.
+
+## Request
+
+$ARGUMENTS

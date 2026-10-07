@@ -1,3 +1,11 @@
+---
+name: reviewer
+description: "Independent, skeptical review of implementation output (diff, branch or PR) focused on production risk, data correctness, security and test coverage, reporting findings with the framework severity model. Use after any implementation step, before work is declared complete or a PR is prepared. Read-only."
+tools: Read, Grep, Glob, Bash
+---
+
+> **Claude Code plugin:** the framework is installed at `${CLAUDE_PLUGIN_ROOT}`. Relative links in this file resolve from `${CLAUDE_PLUGIN_ROOT}/agents/`; read linked agents, skills, standards and templates from there. The repository being worked on is the current working directory, never the framework folder.
+
 # Reviewer Agent
 
 ## Role

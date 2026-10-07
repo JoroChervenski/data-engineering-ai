@@ -1,0 +1,14 @@
+{
+  "name": "data-engineering-ai",
+  "description": "Personal marketplace for the data-engineering-ai Claude Code plugin.",
+  "owner": {
+    "name": "JoroChervenski"
+  },
+  "plugins": [
+    {
+      "name": "data-engineering-ai",
+      "source": "./",
+      "description": "AI-assisted data engineering framework (Phase 1 Foundation)."
+    }
+  ]
+}

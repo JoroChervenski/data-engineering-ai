@@ -1,3 +1,10 @@
+---
+name: kimball-review
+description: "Review a dimensional model or Power BI semantic model against Kimball principles: business process, grain, fact types, conformed/role-playing/junk dimensions, SCD handling, late-arriving data and modelling anti-patterns. Use when designing or reviewing Gold-layer facts/dimensions or semantic-model relationships."
+---
+
+> **Claude Code plugin:** the framework is installed at `${CLAUDE_PLUGIN_ROOT}`. Relative links in this file resolve from `${CLAUDE_PLUGIN_ROOT}/skills/kimball-review/`; read linked agents, skills, standards and templates from there. The repository being worked on is the current working directory, never the framework folder.
+
 # Kimball Review
 
 ## Purpose
@@ -99,4 +106,4 @@ declared anywhere."
 
 Architecture-level consequences (e.g., a target-architecture change) go to
 the [Architect agent](../../agents/architect.agent.md) via
-[`architecture-review`](../architecture-review/SKILL.md).
+[`architecture-assessment`](../architecture-assessment/SKILL.md).

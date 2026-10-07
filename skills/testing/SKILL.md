@@ -1,3 +1,10 @@
+---
+name: testing
+description: "Choose and apply the right test types (unit, data quality, reconciliation, regression, integration) for a data engineering change so correctness is verified, not assumed. Use with any implementation step and when checking whether tests cover risks found in review."
+---
+
+> **Claude Code plugin:** the framework is installed at `${CLAUDE_PLUGIN_ROOT}`. Relative links in this file resolve from `${CLAUDE_PLUGIN_ROOT}/skills/testing/`; read linked agents, skills, standards and templates from there. The repository being worked on is the current working directory, never the framework folder.
+
 # Testing
 
 ## Purpose

@@ -1,3 +1,10 @@
+---
+description: "Build a PR description from the actual diff, test results and review findings"
+argument-hint: "[branch]"
+---
+
+> **Claude Code plugin:** the framework is installed at `${CLAUDE_PLUGIN_ROOT}`. Relative links in this file resolve from `${CLAUDE_PLUGIN_ROOT}/commands/`; read linked agents, skills, standards and templates from there. The repository being worked on is the current working directory, never the framework folder.
+
 # `/prepare-pr`
 
 ## Purpose
@@ -41,3 +48,7 @@ reviewer checklist — per `templates/PR.md`.
   higher-privilege capability (see the implementation spec's Phase 5).
 - Never contradicts the actual diff; never claims a test ran if it did
   not.
+
+## Request
+
+$ARGUMENTS
