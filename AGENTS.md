@@ -38,17 +38,21 @@ dimensional modelling. See [README.md](README.md) for the full picture.
    connection strings or tenant/subscription identifiers anywhere in this
    repository, including inside examples. See
    [`standards/security.md`](standards/security.md).
-7. **Work incrementally.** Do not attempt to build the full target
-   structure (see the implementation spec, section 7) in one pass. Follow
-   the phase defined in the spec; do not start a later phase without
-   explicit instruction.
+7. **Work incrementally, driven by real tasks.** Do not attempt to build
+   the full target structure (see the implementation spec, section 7) in
+   one pass. Improving existing agents, skills, standards, templates and
+   commands is allowed whenever the owner asks for it, typically by
+   promoting an [`inbox/`](inbox/README.md) item. New specialist agents
+   (Phase 3), external tool/MCP integrations (Phase 4) and write or
+   deploy automation (Phase 5 and later) still need explicit instruction.
 8. **Tests/validation must accompany meaningful changes.** When adding or
-   changing an agent, skill, standard, template or command, re-check: all
-   required files for the current phase exist, every Markdown link
-   resolves, terminology (severities, Kimball terms, security terms) stays
-   consistent across files, and no client-specific data or secrets were
-   introduced. A dedicated `tests/` directory is introduced once there is
-   an automatable check worth running in CI — not before.
+   changing an agent, skill, standard, template or command, run
+   `python3 tests/validate_framework.py`. It checks that every Markdown
+   link resolves, that agents, skills and commands carry the frontmatter
+   Claude Code needs, and that no secret-like strings or client terms
+   (from the untracked `.client-terms` file) were introduced. Also
+   re-check by hand that terminology (severities, Kimball terms, security
+   terms) stays consistent across files.
 9. **Do not duplicate instructions unnecessarily.** If the same guidance
    is about to be written in two places, link to the single canonical
    location instead.
@@ -59,7 +63,17 @@ dimensional modelling. See [README.md](README.md) for the full picture.
 
 ## Current phase
 
-**Phase 1 — Foundation.** Scope, rationale and the full phase roadmap are
-defined in `AI_DATA_ENGINEERING_PLATFORM_IMPLEMENTATION_SPEC.md`. Do not
-implement Phase 2 or later, and do not add external tool/MCP integrations,
+**Phase 1 — Foundation, with task-driven Phase 2 improvements** (see rule
+7). Scope, rationale and the full phase roadmap are defined in
+`AI_DATA_ENGINEERING_PLATFORM_IMPLEMENTATION_SPEC.md`. Do not add
+specialist agents, external tool/MCP integrations or write automation
 without an explicit instruction to do so.
+
+## Inbox
+
+[`inbox/`](inbox/README.md) holds anonymised lessons that the
+[`capture-learnings`](skills/capture-learnings/SKILL.md) skill files from
+client work. When asked to process it: promote the items that meet the
+promotion rule in `inbox/README.md` by editing their target files, mark
+each item promoted or rejected, run the validator, and stop before
+committing so the owner can review the diff.

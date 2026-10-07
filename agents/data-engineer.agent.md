@@ -62,4 +62,7 @@ the plan this agent implements against for any non-trivial change.
 
 Implementation output always goes to the
 [Reviewer agent](reviewer.agent.md) before being considered complete or
-handed to [`/prepare-pr`](../commands/prepare-pr.md).
+handed to [`/prepare-pr`](../commands/prepare-pr.md). When this agent runs
+as a subagent, it reports back to the main conversation, which runs that
+review (see the [`orchestration`](../skills/orchestration/SKILL.md)
+skill); it never approves its own work.

@@ -49,6 +49,12 @@ repository; it never stores that repository's facts itself.
   quality checks.
 - A skill may be used by more than one agent. Procedures are not duplicated
   across agent prompts; agents reference skills instead.
+- Orchestration is a skill ([`orchestration`](skills/orchestration/SKILL.md)),
+  not an agent: it has to run in the main conversation, the only place
+  that can stop for the user's approval and show intermediate results.
+  The four agents run as subagents for work that benefits from its own
+  context: discovery, architecture, bounded implementation and
+  independent review.
 
 ## Client isolation
 
@@ -99,10 +105,11 @@ and never copied from one client repository into another.
 ## How to use commands
 
 Commands (`commands/*.md`) are reusable workflows that chain skills and
-agents together. Phase 1 ships:
+agents together:
 
 | Command | Purpose |
 |---|---|
+| [`/ticket`](commands/ticket.md) | Run a ticket end to end, with its state in a resumable ticket note |
 | [`/bootstrap-project`](commands/bootstrap-project.md) | Create a client repository's AI overlay from templates |
 | [`/understand-repository`](commands/understand-repository.md) | Run repository discovery and produce a structured project model |
 | [`/architecture-review`](commands/architecture-review.md) | Run discovery plus a qualitative architecture review |
@@ -113,8 +120,10 @@ agents together. Phase 1 ships:
 | [`/prepare-pr`](commands/prepare-pr.md) | Build a PR description from the actual diff/tests/reviews |
 
 A small Python bug does not need every specialist invoked. The
-[Orchestrator](agents/orchestrator.agent.md) classifies the task first and
-invokes only the agents/skills the task actually requires.
+[`orchestration`](skills/orchestration/SKILL.md) skill classifies the task
+first and invokes only the agents/skills the task actually requires.
+
+Skills can be invoked directly too, e.g. `/data-engineering-ai:capture-learnings`.
 
 ## Use with Claude Code
 
@@ -131,11 +140,11 @@ claude plugin update data-engineering-ai@data-engineering-ai
 
 Inside a client repository:
 
-- Commands are namespaced, e.g. `/data-engineering-ai:bootstrap-project`,
-  `/data-engineering-ai:plan-ticket <ticket>`,
+- Commands are namespaced, e.g. `/data-engineering-ai:ticket <ticket>`,
+  `/data-engineering-ai:bootstrap-project`,
   `/data-engineering-ai:review-pr`.
-- Agents are available as subagents `data-engineering-ai:orchestrator`,
-  `:repository-analyst`, `:architect`, `:data-engineer`, `:reviewer`.
+- Agents are available as subagents `data-engineering-ai:repository-analyst`,
+  `:architect`, `:data-engineer`, `:reviewer`.
 - Skills load on demand when a task matches their description.
 - The client overlay (`AGENTS.md` + `.ai/`) lives in the client repository.
   Claude Code reads `CLAUDE.md`, so add one containing `@AGENTS.md`.
@@ -148,14 +157,19 @@ collide with the `/architecture-review` command.
 
 ## Implementation status
 
-**Phase 1 — Foundation (current).** Minimal, coherent framework: 5 core
-agents, 8 Phase 1 skills, 8 engineering standards, 9 client-overlay
-templates, 8 commands. Enough to reliably bootstrap one real client
-repository and run the core workflows above.
+**Phase 1 — Foundation, with task-driven Phase 2 improvements (current).**
+4 core agents, 10 skills, 8 engineering standards, 10 client-overlay
+templates, 9 commands, and a static validator. Enough to bootstrap a real
+client repository, run tickets end to end, and feed lessons back.
+
+Phase 2 so far: orchestration moved into the main conversation, the
+`/ticket` workflow with resumable ticket notes, and the
+`capture-learnings` loop with its [`inbox/`](inbox/README.md).
 
 Not yet implemented (by design — see the roadmap below):
 
-- Deep/expanded behavior for every agent and skill (Phase 2).
+- Deeper behaviour for the remaining agents and skills (Phase 2, driven
+  by inbox items rather than up front).
 - Specialist agents beyond the Phase 1 five, e.g. Fabric Architect, SQL
   Specialist, Spark Specialist, Semantic Model Specialist, Security
   Reviewer, Production Reliability Reviewer, DevOps Agent, PR Agent
@@ -167,11 +181,56 @@ Not yet implemented (by design — see the roadmap below):
 - Advanced automation: automated PR review, drift detection, semantic-model
   linting, CI enforcement (Phase 6).
 
+## Updating the framework
+
+The framework improves from real work in two loops:
+
+1. **Per task.** `/ticket` records learning candidates in the ticket note
+   as they happen. At close, the
+   [`capture-learnings`](skills/capture-learnings/SKILL.md) skill
+   proposes project facts for the client's `.ai/` overlay and anonymised,
+   generic lessons for [`inbox/`](inbox/README.md). Nothing is written
+   without approval.
+2. **Across tasks.** In this repository, inbox items are promoted into
+   agents, skills, standards, templates or commands once they meet the
+   promotion rule (seen three times, prevents a Critical/High failure, or
+   the owner asks). See the Inbox section of [`AGENTS.md`](AGENTS.md).
+
+`capture-learnings` finds the inbox through the environment variable
+`DATA_ENGINEERING_AI_SRC`, the path of your working clone. Set it once in
+`~/.claude/settings.json`:
+
+```json
+{ "env": { "DATA_ENGINEERING_AI_SRC": "/path/to/data-engineering-ai" } }
+```
+
+Ad-hoc changes, from smallest to widest reach:
+
+| Scope | How | Takes effect |
+|---|---|---|
+| One client only | Edit its `.ai/` overlay, or add a project skill under the client's `.claude/skills/<name>/SKILL.md` | Immediately / next session |
+| Framework, trial | Edit the working clone, then start `claude --plugin-dir /path/to/data-engineering-ai` | That session |
+| Framework, rollout | Run `python3 tests/validate_framework.py`, commit and push, then `claude plugin marketplace update data-engineering-ai` and `claude plugin update data-engineering-ai@data-engineering-ai`; start a new session | Every client repository |
+
+Notes:
+
+- Never edit the copies under `~/.claude/plugins/`. They are managed by
+  Claude Code and replaced on update, and the running plugin is the
+  commit-pinned copy under `~/.claude/plugins/cache/`.
+- `plugin.json` has no `version`, so every commit is a new version. If a
+  `version` is added, it must be bumped on every release, or updates are
+  skipped.
+- Keep the untracked `.client-terms` file (one client term per line) in
+  the working clone, so the validator catches client terms before they
+  are committed.
+
 ## Roadmap
 
 See `AI_DATA_ENGINEERING_PLATFORM_IMPLEMENTATION_SPEC.md` for the full
-phased plan (Phases 2–6). Each phase is only implemented after the
-previous one has been reviewed; later phases are not started implicitly.
+phased plan (Phases 2–6). Specialist agents, external integrations and
+write automation are only started on explicit instruction; improvements
+to the existing parts follow the inbox (see [`AGENTS.md`](AGENTS.md),
+rule 7).
 
 ## Safety model
 

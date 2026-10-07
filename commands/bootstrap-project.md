@@ -23,7 +23,7 @@ framework's templates, grounded in the repository's actual state.
 - [Repository Analyst agent](../agents/repository-analyst.agent.md) via
   [`repository-discovery`](../skills/repository-discovery/SKILL.md)
   (required first step).
-- [Orchestrator agent](../agents/orchestrator.agent.md) to sequence the
+- [`orchestration`](../skills/orchestration/SKILL.md) skill to sequence the
   rest.
 
 ## Ordered Execution Steps
@@ -45,13 +45,21 @@ framework's templates, grounded in the repository's actual state.
 6. Propose `.ai/manifest.yaml` from
    [`templates/manifest.yaml`](../templates/manifest.yaml), filled only
    with observed values; leave the rest as the template's defaults/
-   unknown markers. Never add credentials, tokens, tenant/subscription
-   IDs beyond what the template itself allows.
-7. Create empty `.ai/adr/` and `.ai/runbooks/` directories only if the
-   repository is expected to actually use them soon; otherwise note them
-   as "to be created when first needed" rather than adding empty
-   placeholder directories.
-8. Present the proposed overlay to the user for review before committing
+   unknown markers. Record the date and client commit under
+   `overlay.bootstrapped`. Never add credentials, tokens,
+   tenant/subscription IDs beyond what the template itself allows.
+7. Create empty `.ai/adr/`, `.ai/runbooks/` and `.ai/tickets/`
+   directories only if the repository is expected to actually use them
+   soon (`.ai/tickets/` when [`/ticket`](ticket.md) will be used);
+   otherwise note them as "to be created when first needed" rather than
+   adding empty placeholder directories.
+8. Agree with the user how the overlay is versioned: committed in the
+   client repository (the default), or kept out of it (for example in a
+   personal notes folder). An overlay kept out of the client repository
+   needs its own Git repository, so that later edits by
+   [`capture-learnings`](../skills/capture-learnings/SKILL.md) have a
+   history and can be undone.
+9. Present the proposed overlay to the user for review before committing
    it — this command proposes; a human (or an explicit follow-up
    instruction) commits.
 

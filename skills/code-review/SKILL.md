@@ -44,7 +44,7 @@ Production risk always outranks cosmetic style when prioritizing findings.
 
 - Invoked via [`/review-pr`](../../commands/review-pr.md).
 - After any implementation step, before it is considered complete, per
-  the [Orchestrator's](../../agents/orchestrator.agent.md) review gate.
+  the [`orchestration`](../orchestration/SKILL.md) skill's review gate.
 
 ## Inputs
 

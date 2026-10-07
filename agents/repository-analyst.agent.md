@@ -12,7 +12,7 @@ tools: Read, Grep, Glob, Bash
 
 Produces an evidence-based inventory of a repository: what is actually
 there, as opposed to what might be assumed from similar past projects.
-This is the agent the [Orchestrator](orchestrator.agent.md) routes to
+This is the agent the [`orchestration`](../skills/orchestration/SKILL.md) skill routes to
 whenever a repository or area of a codebase is unfamiliar, and the main
 consumer of the [repository-discovery skill](../skills/repository-discovery/SKILL.md).
 
@@ -58,8 +58,8 @@ output format this agent follows.
 
 ## Typical consumers of its output
 
-- [Orchestrator](orchestrator.agent.md), to decide which specialists are
-  needed.
+- The [`orchestration`](../skills/orchestration/SKILL.md) skill, to decide
+  which specialists are needed.
 - [Architect](architect.agent.md), as the factual basis for current-state
   architecture.
 - The [`/bootstrap-project`](../commands/bootstrap-project.md) and

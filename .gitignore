@@ -1,0 +1,3 @@
+# Local list of client terms for tests/validate_framework.py (never commit)
+.client-terms
+__pycache__/
