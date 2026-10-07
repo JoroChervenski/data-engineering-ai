@@ -60,3 +60,12 @@ leave alone.>
 - [.ai/STANDARDS.md](.ai/STANDARDS.md)
 - [.ai/TECH-DEBT.md](.ai/TECH-DEBT.md)
 - [.ai/manifest.yaml](.ai/manifest.yaml)
+
+## 11. Working notes and workflow
+
+<Where ticket notes, ADRs and runbooks live (default: `.ai/tickets/`,
+`.ai/adr/`, `.ai/runbooks/`), any frontmatter or link conventions they
+must follow, and how the overlay itself is versioned (committed here, or
+its own repository). Tickets run through `/ticket <TICKET-ID>`; lessons
+are recorded at close with the `capture-learnings` skill.>
+

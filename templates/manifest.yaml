@@ -42,6 +42,20 @@ documentation:
   data_model: ".ai/DATA-MODEL.md"
   glossary: ".ai/GLOSSARY.md"
 
+notes:
+  tickets: ".ai/tickets" # one <TICKET-ID>.md per ticket (templates/TICKET.md)
+  adr: ".ai/adr"
+  runbooks: ".ai/runbooks"
+
+overlay:
+  bootstrapped:
+    date: "unknown" # YYYY-MM-DD
+    commit: "unknown" # client repository commit the overlay was built from
+  last_learning_capture: # written by the capture-learnings skill
+    date: "unknown"
+    commit: "unknown"
+    ticket: "unknown"
+
 # The Repository Analyst should periodically compare this manifest
 # against the observed repository state and report drift rather than
 # assume the manifest stays accurate indefinitely.
