@@ -1,0 +1,5 @@
+{
+  "project": "__PROJECT__",
+  "repo": "__REPO__",
+  "vault_dir": "/vault/__PROJECT__"
+}

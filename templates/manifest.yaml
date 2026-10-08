@@ -24,9 +24,10 @@ source_control:
   provider: "unknown" # e.g. github, azure-devops
 
 environments: []
-  # - dev
-  # - test
-  # - prod
+  # - name: dev
+  #   write_access: true
+  # - name: prod
+  #   write_access: false # production stays read-only unless a human approves a change
 
 components:
   lakehouse: false
@@ -46,6 +47,19 @@ notes:
   tickets: ".ai/tickets" # one <TICKET-ID>.md per ticket (templates/TICKET.md)
   adr: ".ai/adr"
   runbooks: ".ai/runbooks"
+
+framework:
+  version: "unknown" # data-engineering-ai version this project was created with
+
+standard:
+  version: "unknown" # Project Standard version (vault: Knowledge/Project Standard)
+  commit: "unknown" # Knowledge commit that version was read from
+
+# Restrictive defaults, not observations. Loosen only with a recorded reason.
+security:
+  production_changes_require_approval: true
+  allow_force_push: false
+  allow_secret_file_reads: false
 
 overlay:
   bootstrapped:
