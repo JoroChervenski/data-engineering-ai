@@ -46,7 +46,9 @@ framework's templates, grounded in the repository's actual state.
    [`templates/manifest.yaml`](../templates/manifest.yaml), filled only
    with observed values; leave the rest as the template's defaults/
    unknown markers. Record the date and client commit under
-   `overlay.bootstrapped`. Never add credentials, tokens,
+   `overlay.bootstrapped`. Keep `framework` and `standard` as the creation
+   script stamped them, or fill them from the framework `VERSION` and the
+   mounted Project Standard if they are still `unknown`. Never add credentials, tokens,
    tenant/subscription IDs beyond what the template itself allows.
 7. Create empty `.ai/adr/`, `.ai/runbooks/` and `.ai/tickets/`
    directories only if the repository is expected to actually use them

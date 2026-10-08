@@ -1,0 +1,26 @@
+{
+  "name": "__PROJECT__ / __REPO__",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "initializeCommand": "sh .devcontainer/initialize.sh __PROJECT__",
+  "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+  },
+  "mounts": [
+    "source=${localEnv:AI_VAULT}/Knowledge,target=/vault/Knowledge,type=bind,readonly",
+    "source=${localEnv:AI_VAULT}/Projects/__PROJECT__,target=/vault/__PROJECT__,type=bind",
+    "source=claude-code-config-${devcontainerId},target=/home/vscode/.claude,type=volume"
+  ],
+  "runArgs": ["--env-file", "${localWorkspaceFolder}/.env"],
+  "containerEnv": {
+    "CLAUDE_CONFIG_DIR": "/home/vscode/.claude",
+    "VAULT_KNOWLEDGE_DIR": "/vault/Knowledge"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python"]
+    }
+  }
+}

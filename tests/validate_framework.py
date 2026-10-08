@@ -6,6 +6,7 @@ Checks:
 - every relative Markdown link resolves (templates/ are excluded: their
   links are meant to resolve inside a client repository);
 - agents, skills and commands carry the frontmatter Claude Code needs;
+- every .json file parses;
 - no secret-like strings or GUIDs;
 - no client terms, read from the untracked file `.client-terms` (one term
   per line, `#` comments allowed) so the list itself never enters Git.
@@ -15,6 +16,7 @@ Exits non-zero if any check fails.
 
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import sys
@@ -108,6 +110,14 @@ def load_client_terms() -> list[str]:
     return terms
 
 
+def check_json(path: Path, text: str) -> list[str]:
+    try:
+        json.loads(text)
+    except ValueError as exc:
+        return [f"{rel(path)}: invalid JSON: {exc}"]
+    return []
+
+
 def check_content(path: Path, text: str, client_terms: list[str]) -> list[str]:
     errors = []
     for number, line in enumerate(text.splitlines(), 1):
@@ -133,6 +143,8 @@ def main() -> int:
         if path.name == ".client-terms" or path.suffix not in {".md", ".json", ".yaml", ".yml", ".py"}:
             continue
         text = path.read_text(encoding="utf-8")
+        if path.suffix == ".json":
+            errors += check_json(path, text)
         if path.suffix == ".md":
             if path.relative_to(ROOT).parts[0] != "templates":
                 errors += check_links(path, text)

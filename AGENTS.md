@@ -45,14 +45,23 @@ dimensional modelling. See [README.md](README.md) for the full picture.
    promoting an [`inbox/`](inbox/README.md) item. New specialist agents
    (Phase 3), external tool/MCP integrations (Phase 4) and write or
    deploy automation (Phase 5 and later) still need explicit instruction.
+   The four hardening workstreams (W1 client template, W2 hooks and
+   policies, W3 verifier and evals, W4 versioning and release) are tracked
+   in [`docs/workstream-gap-analysis.md`](docs/workstream-gap-analysis.md)
+   and are started one at a time, on explicit instruction.
 8. **Tests/validation must accompany meaningful changes.** When adding or
-   changing an agent, skill, standard, template or command, run
-   `python3 tests/validate_framework.py`. It checks that every Markdown
-   link resolves, that agents, skills and commands carry the frontmatter
-   Claude Code needs, and that no secret-like strings or client terms
-   (from the untracked `.client-terms` file) were introduced. Also
-   re-check by hand that terminology (severities, Kimball terms, security
-   terms) stays consistent across files.
+   changing an agent, skill, standard, template, script or command, run
+   `python3 tests/validate_framework.py` and
+   `python3 -m unittest discover -s tests`. The validator checks that every
+   Markdown link resolves, that every JSON file parses, that agents, skills
+   and commands carry the frontmatter Claude Code needs, and that no
+   secret-like strings or client terms (from the untracked `.client-terms`
+   file) were introduced. The unit tests cover the client template,
+   `scripts/new_client.py` and `scripts/vault_sync.py`; set `KNOWLEDGE_DIR`
+   to the vault's `Knowledge` folder to also compare the pinned standard
+   snapshot in `tests/fixtures/standard` with the real one. Also re-check by
+   hand that terminology (severities, Kimball terms, security terms) stays
+   consistent across files.
 9. **Do not duplicate instructions unnecessarily.** If the same guidance
    is about to be written in two places, link to the single canonical
    location instead.
@@ -60,11 +69,22 @@ dimensional modelling. See [README.md](README.md) for the full picture.
     a repository-facing artifact (overlay docs, manifests, reviews) must
     clearly separate observed facts from inference, and must never invent
     architecture, data or configuration that was not actually observed.
+11. **The vault is read-only, and only two folders of it.** What every
+    project MUST have is the Project Standard in the Obsidian vault's
+    `Knowledge/` folder. This repository implements it (the client
+    template, `scripts/new-client.sh`, `scripts/vault_sync.py`, the tests)
+    and does not copy its text: link to it or test against it. You may read
+    `Knowledge/` and `Templates/`. Never read, write, mount or ask for the
+    vault's `Projects/` folder or `Home.md`; project facts live in the
+    client repository and its own vault folder. Do not run
+    `scripts/new-client.sh` yourself: the person creating a project runs it
+    on the host. The Dev Container in `.devcontainer/` enforces this by
+    mounting only those two folders, read-only.
 
 ## Current phase
 
 **Phase 1 — Foundation, with task-driven Phase 2 improvements** (see rule
-7). Scope, rationale and the full phase roadmap are defined in
+7), plus hardening workstream W1, the client template. Scope, rationale and the full phase roadmap are defined in
 `AI_DATA_ENGINEERING_PLATFORM_IMPLEMENTATION_SPEC.md`. Do not add
 specialist agents, external tool/MCP integrations or write automation
 without an explicit instruction to do so.

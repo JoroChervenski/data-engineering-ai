@@ -111,6 +111,7 @@ agents together:
 | Command | Purpose |
 |---|---|
 | [`/ticket`](commands/ticket.md) | Run a ticket end to end, with its state in a resumable ticket note |
+| [`/vault-sync`](commands/vault-sync.md) | Mirror the repo's overlay, tickets, ADRs and runbooks read-only into the project's vault folder |
 | [`/bootstrap-project`](commands/bootstrap-project.md) | Create a client repository's AI overlay from templates |
 | [`/understand-repository`](commands/understand-repository.md) | Run repository discovery and produce a structured project model |
 | [`/architecture-review`](commands/architecture-review.md) | Run discovery plus a qualitative architecture review |
@@ -156,16 +157,67 @@ short note pointing at `${CLAUDE_PLUGIN_ROOT}`, so the relative links to
 architecture review skill is named `architecture-assessment` so it does not
 collide with the `/architecture-review` command.
 
+## Creating a client project
+
+What every project MUST have is defined once, in the **Project Standard** in your Obsidian
+vault's `Knowledge/` folder (requirements with IDs, plus a machine-readable `standard.json`).
+This repository implements it and does not copy it:
+
+| Piece | What it does |
+|---|---|
+| [`templates/client-project/`](templates/client-project/) | Dev Container, Claude Code settings, guardrails, vault sync config, README |
+| [`scripts/new-client.sh`](scripts/new-client.sh) | Copies the template, creates the empty `Projects/<Project>/` vault folder, stamps versions, builds the vault layout |
+| [`scripts/vault_sync.py`](scripts/vault_sync.py) | Mirrors `.ai/` files, tickets, ADRs and runbooks read-only into the vault, using the layout in `standard.json` |
+
+Run the creation script yourself, in a host terminal (not in a container):
+
+```bash
+export AI_VAULT=/path/to/your/vault          # the folder with Knowledge/ and Projects/
+./scripts/new-client.sh <Project> /path/to/new/repo [--repo NAME] [--with-azure-cli]
+```
+
+It checks everything first, refuses to overwrite any existing file, and generates no secrets. A
+project's container mounts only its own `Projects/<Project>/` folder (read/write) and
+`Knowledge/` (read-only): never the vault root, another project or your home folder. This
+framework repository may read `Knowledge/` and `Templates/` only. The full requirements are in
+the Project Standard's notes, starting with `Project Standard.md`.
+
+## Working on the framework in a container
+
+This repository has its own Dev Container ([`.devcontainer/`](.devcontainer/)). It mounts the
+vault's `Knowledge/` and `Templates/` folders read-only and nothing else: no `Projects/`, no
+`Home.md`, no client repositories. So an agent working here can read the Project Standard but cannot
+reach any client's notes or code.
+
+```bash
+export AI_VAULT=/path/to/your/vault   # the folder with Knowledge/, Templates/ and Projects/
+code .                                # then Reopen in Container
+```
+
+Inside it, `python3 tests/validate_framework.py` and `python3 -m unittest discover -s tests` run
+as usual, and the test that compares the pinned standard snapshot with the real standard is active
+(`KNOWLEDGE_DIR` is set). `DATA_ENGINEERING_AI_SRC` points at the workspace, for `capture-learnings`.
+Claude Code's login lives in a Docker volume for this container only. The image is the client
+template's Dockerfile, so the base image is pinned in one place.
+
+Because the container cannot see client repositories or `Projects/`, run `scripts/new-client.sh` in a
+host terminal instead.
+
 ## Implementation status
 
 **Phase 1 — Foundation, with task-driven Phase 2 improvements (current).**
 4 core agents, 10 skills, 8 engineering standards, 10 client-overlay
-templates, 9 commands, and a static validator. Enough to bootstrap a real
+templates, 10 commands, a static validator and unit tests. Enough to bootstrap a real
 client repository, run tickets end to end, and feed lessons back.
 
 Phase 2 so far: orchestration moved into the main conversation, the
 `/ticket` workflow with resumable ticket notes, and the
 `capture-learnings` loop with its [`inbox/`](inbox/README.md).
+
+Hardening workstream W1, the client template, adds a project template, a creation
+script and a vault sync that follow the Project Standard (see
+[Creating a client project](#creating-a-client-project)). W2 to W4 are not started; see
+[`docs/workstream-gap-analysis.md`](docs/workstream-gap-analysis.md).
 
 Not yet implemented (by design — see the roadmap below):
 

@@ -1,0 +1,29 @@
+{
+  "name": "data-engineering-ai (framework)",
+  "build": {
+    "dockerfile": "../templates/client-project/.devcontainer/Dockerfile",
+    "context": "../templates/client-project/.devcontainer"
+  },
+  "initializeCommand": "sh .devcontainer/initialize.sh",
+  "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+  },
+  "mounts": [
+    "source=${localEnv:AI_VAULT}/Knowledge,target=/vault/Knowledge,type=bind,readonly",
+    "source=${localEnv:AI_VAULT}/Templates,target=/vault/Templates,type=bind,readonly",
+    "source=claude-code-config-${devcontainerId},target=/home/vscode/.claude,type=volume"
+  ],
+  "containerEnv": {
+    "CLAUDE_CONFIG_DIR": "/home/vscode/.claude",
+    "DATA_ENGINEERING_AI_SRC": "${containerWorkspaceFolder}",
+    "KNOWLEDGE_DIR": "/vault/Knowledge",
+    "VAULT_KNOWLEDGE_DIR": "/vault/Knowledge",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python"]
+    }
+  }
+}

@@ -1,0 +1,237 @@
+{
+  "standard": "project-standard",
+  "version": "0.1.0",
+  "status": "draft",
+  "vault": {
+    "projects_root": "Projects",
+    "folders": [
+      {
+        "name": "01 Overview",
+        "writer": "human",
+        "purpose": "Project-level notes: overview, open questions, stakeholders",
+        "role": "overview"
+      },
+      {
+        "name": "02 Repos",
+        "writer": "sync",
+        "purpose": "Read-only mirrors of each repo's .ai/ files, one subfolder per repo"
+      },
+      {
+        "name": "03 Tickets",
+        "writer": "sync",
+        "purpose": "One note per ticket, named by ticket ID (mirror of .ai/tickets/)"
+      },
+      {
+        "name": "04 Decisions",
+        "writer": "mixed",
+        "purpose": "Project-level ADRs and decision records; <repo>/ subfolders mirror each repo's .ai/adr/"
+      },
+      {
+        "name": "05 Runbooks",
+        "writer": "mixed",
+        "purpose": "Project-level runbooks; <repo>/ subfolders mirror each repo's .ai/runbooks/"
+      },
+      {
+        "name": "06 Analysis",
+        "writer": "human",
+        "purpose": "Comparisons, mappings, investigations"
+      },
+      {
+        "name": "07 Reference",
+        "writer": "human",
+        "purpose": "API collections, vendor notes, external docs"
+      },
+      {
+        "name": "99 Inbox",
+        "writer": "human",
+        "purpose": "Unsorted notes, filed weekly"
+      }
+    ],
+    "hub": {
+      "file": "{project}.md",
+      "template": "_templates/Project Hub.md",
+      "sync_block": {
+        "start": "<!-- sync:start -->",
+        "end": "<!-- sync:end -->"
+      }
+    },
+    "conventions": {
+      "file": "_Conventions.md",
+      "template": "_templates/Project Conventions.md"
+    },
+    "template_tokens": [
+      "project",
+      "ptag",
+      "date",
+      "standard_version",
+      "standard_commit",
+      "sync_start",
+      "sync_end"
+    ],
+    "names": {
+      "project_note": "{project} - {topic}",
+      "repo_note": "{project} - {repo} - {topic}",
+      "ticket_note": "{ticket}",
+      "project_pattern": "^[A-Za-z0-9]+(-[A-Za-z0-9]+)*$",
+      "repo_pattern": "^[A-Za-z0-9._-]+$",
+      "reserved_project_names": [
+        "Knowledge",
+        "Templates",
+        "Home"
+      ],
+      "mirror_note": "{project} - {repo} - {stem}"
+    },
+    "note_types": [
+      "hub",
+      "overview",
+      "ticket",
+      "decision",
+      "runbook",
+      "analysis",
+      "reference",
+      "conventions"
+    ],
+    "authority": [
+      "mirror",
+      "working"
+    ],
+    "frontmatter": {
+      "required": [
+        "project",
+        "type",
+        "status",
+        "authority",
+        "tags"
+      ],
+      "repo_note": [
+        "repo"
+      ],
+      "mirror": [
+        "source",
+        "captured"
+      ],
+      "repo_file_mirror": [
+        "source_commit"
+      ],
+      "ticket_mirror": [
+        "ticket",
+        "branch",
+        "pr",
+        "created"
+      ],
+      "hub_and_conventions": [
+        "standard_version",
+        "standard_commit"
+      ]
+    }
+  },
+  "mirrors": {
+    "repo_overlay": {
+      "source_dir": ".ai",
+      "target": "02 Repos/{repo}",
+      "type": "overview",
+      "topics": {
+        "PROJECT.md": "Project",
+        "ARCHITECTURE.md": "Architecture",
+        "DATA-MODEL.md": "Data Model",
+        "GLOSSARY.md": "Glossary",
+        "STANDARDS.md": "Standards",
+        "TECH-DEBT.md": "Tech Debt"
+      }
+    },
+    "tickets": {
+      "source_dir": ".ai/tickets",
+      "target": "03 Tickets",
+      "type": "ticket"
+    },
+    "adr": {
+      "source_dir": ".ai/adr",
+      "target": "04 Decisions/{repo}",
+      "type": "decision"
+    },
+    "runbooks": {
+      "source_dir": ".ai/runbooks",
+      "target": "05 Runbooks/{repo}",
+      "type": "runbook"
+    }
+  },
+  "repo": {
+    "root_files": [
+      "AGENTS.md"
+    ],
+    "overlay_dir": ".ai",
+    "overlay_files": [
+      "PROJECT.md",
+      "ARCHITECTURE.md",
+      "DATA-MODEL.md",
+      "GLOSSARY.md",
+      "STANDARDS.md",
+      "TECH-DEBT.md",
+      "manifest.yaml"
+    ],
+    "overlay_dirs_when_needed": [
+      "tickets",
+      "adr",
+      "runbooks"
+    ],
+    "sync_config": {
+      "file": ".ai/vault-sync.json",
+      "keys": [
+        "project",
+        "repo",
+        "vault_dir"
+      ]
+    },
+    "structure_files": [
+      ".devcontainer/devcontainer.json",
+      ".devcontainer/Dockerfile",
+      ".devcontainer/initialize.sh",
+      ".claude/settings.json",
+      ".ai/vault-sync.json",
+      ".ai/guardrails.json",
+      ".ai/manifest.yaml",
+      "AGENTS.md",
+      "CLAUDE.md",
+      "README.md",
+      ".env.example",
+      ".gitignore"
+    ],
+    "required_dirs": [
+      "docs/requirements",
+      "tests"
+    ]
+  },
+  "isolation": {
+    "container_paths": {
+      "knowledge": "/vault/Knowledge",
+      "templates": "/vault/Templates",
+      "project": "/vault/{project}"
+    },
+    "project_container": {
+      "read_write": [
+        "Projects/{project}"
+      ],
+      "read_only": [
+        "Knowledge"
+      ],
+      "read_only_optional": [
+        "Templates"
+      ]
+    },
+    "framework_container": {
+      "read_write": [],
+      "read_only": [
+        "Knowledge",
+        "Templates"
+      ]
+    },
+    "never_mounted": [
+      "the vault root",
+      "Home.md",
+      "any other Projects/<name>",
+      "any parent of a project folder",
+      "any parent of the client repos",
+      "a home directory"
+    ]
+  }
+}
