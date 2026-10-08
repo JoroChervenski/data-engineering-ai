@@ -70,46 +70,55 @@ The default Python has no PyYAML, `jsonschema` or `pytest`.
 11. **Read-only is not enforced.** The three read-only agents have `Bash`, which can write. This is
     the main reason for W2.
 
-## 4. Unknowns to verify before building
+## 4. Unknowns
 
-- How a `PreToolUse` hook learns which subagent or role is calling. W2 role enforcement depends on it.
+Checked against the Claude Code documentation on 2026-10-08:
+
+- **Marketplace privacy and pinning (W4): answered.** A marketplace repository can be private, if the
+  user's git has credentials for it. A plugin entry can be pinned with `ref` (branch or tag) and `sha`,
+  and a marketplace can be added at a ref with `#<ref>`. Users get new plugin files only when the
+  computed `version` changes; without a `version` they track commits.
+- **Registering the plugin per repository: answered.** `extraKnownMarketplaces` and `enabledPlugins` in a
+  repo's `.claude/settings.json` work after the developer trusts the folder. The client template uses them.
+- **Permission rules: answered.** `Read(~/...)` and `Read(!pattern)` work in deny rules; Bash rules match
+  command text only, so they are not a security boundary. Deny is checked before ask, ask before allow.
+
+Still unverified, and blocking W2 role enforcement:
+
+- How a `PreToolUse` hook learns which subagent or role is calling.
 - Whether a plugin can ship hooks, and where they are declared.
-- Whether the plugin marketplace supports pinning a client to a version or tag, and rollback. W4 depends
-  on it.
-- Whether the current marketplace repository is private. The spec assumes a private marketplace.
 
-Check each against the current Claude Code documentation first; do not design from memory.
+## 5. Decisions
 
-## 5. Decisions needed before W1
-
-| # | Decision | Recommendation |
+| # | Decision | Outcome |
 |---|---|---|
-| D1 | Name the new work as workstreams, not phases; update AGENTS.md rule 7 | Yes |
-| D2 | Add `.ai/project.yaml`, or extend `.ai/manifest.yaml` | Extend `manifest.yaml`; fewer files, one schema |
-| D3 | ADR and runbook location | Keep `.ai/adr` and `.ai/runbooks`; drop `docs/adr` and `docs/runbooks` |
-| D4 | How to parse YAML policy without a new dependency | JSON policies and manifest checks first; add PyYAML only if W2 needs YAML |
-| D5 | First framework version and its source | `VERSION` file at `0.1.0`, a matching git tag, and `plugin.json` `version` kept in sync by a check |
+| D1 | Name the new work as workstreams, not phases; update AGENTS.md rule 7 | Done |
+| D2 | Add `.ai/project.yaml`, or extend `.ai/manifest.yaml` | Extended `manifest.yaml` with `framework`, `standard`, `security` and per-environment `write_access` |
+| D3 | ADR and runbook location | `.ai/adr` and `.ai/runbooks`, mirrored read-only into the vault per repo; no `docs/adr`, `docs/runbooks` or `docs/architecture` |
+| D4 | How to parse policy without a new dependency | `.ai/guardrails.json` (JSON), with the keys `deny` and `approval_required` (not `blocked`) |
+| D5 | First framework version and its source | `VERSION` file at `0.1.0`. The git tag and a `plugin.json` `version` are W4 |
 
-## 6. Recommended sequence
+## 6. Sequence and status
 
-1. Close-out (this branch): README, marketplace and kimball fixes, the dry-run, this document.
-2. **W1.** `templates/client-project/`, `scripts/new-client.sh`, template tests added to the validator.
-3. **Minimal CI.** `validate.yml` running the existing validator. Cheap, and pulled forward from W4.
-4. **W2.** Policy engine with unit tests first, then hooks, then role enforcement.
-5. **W3.** Verifier agent and its output contract, then Promptfoo with a baseline.
-6. **W4.** `VERSION`, `CHANGELOG`, `evals.yml`, `release.yml`, rollback docs.
-7. README update.
+1. Close-out of Phase 1: done.
+2. **W1, client template: implemented.** `templates/client-project/`, `scripts/new-client.sh`,
+   `scripts/vault_sync.py`, the `/vault-sync` command, and tests. The requirements it implements are in the
+   Project Standard in the vault's `Knowledge/` folder, not here.
+3. Minimal CI: `validate.yml` running the validator and the unit tests. Not started.
+4. W2, policy engine and hooks. Not started.
+5. W3, verifier and evals. Not started.
+6. W4, `VERSION` tag, `CHANGELOG`, `evals.yml`, `release.yml`, rollback docs. Not started.
+7. README update at the end.
 
-## 7. Files W1 would add or change
+Also not done: a Dev Container for this framework repository itself, mounting only `Knowledge/` and
+`Templates/` read-only. The mount rules it must satisfy are already tested in
+`tests/devcontainer_rules.py` (role `framework`).
 
-Add: `templates/client-project/` (`.devcontainer/devcontainer.json`, `.devcontainer/Dockerfile`,
-`.claude/settings.json`, `.ai/guardrails.yaml`, `docs/` folders, `tests/`, `.env.example`, `CLAUDE.md`,
-`README.md`) and `scripts/new-client.sh`.
+## 7. What W1 added or changed
 
-Change: [tests/validate_framework.py](../tests/validate_framework.py) (template checks),
-[templates/manifest.yaml](../templates/manifest.yaml) (project and environment fields, per D2),
-[AGENTS.md](../AGENTS.md) rule 7 (per D1), [README.md](../README.md).
+Added: `templates/client-project/`, `scripts/new-client.sh`, `scripts/new_client.py`,
+`scripts/vault_sync.py`, `commands/vault-sync.md`, `VERSION`, `tests/test_vault_sync.py`,
+`tests/test_client_template.py`, `tests/devcontainer_rules.py`, `tests/fixtures/standard/`.
 
-Design notes for the template: a named volume per client for Claude Code's own configuration, so one
-client's login and settings are never shared; no bind mount of the home directory; credentials injected
-at runtime, never at image build.
+Changed: `templates/manifest.yaml`, `commands/bootstrap-project.md`, `tests/validate_framework.py` (JSON
+check), `AGENTS.md` (rules 7, 8 and 11), `README.md`.
