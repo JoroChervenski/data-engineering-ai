@@ -8,7 +8,7 @@
     {
       "name": "data-engineering-ai",
       "source": "./",
-      "description": "AI-assisted data engineering framework (Phase 1 Foundation)."
+      "description": "AI-assisted data engineering framework for Microsoft Fabric and Kimball modelling."
     }
   ]
 }
