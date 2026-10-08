@@ -1,6 +1,6 @@
 ---
 name: capture-learnings
-description: "Turn what was learned during a ticket or session into approved updates: project-specific facts go into the client's .ai/ overlay, generic lessons go (anonymised) into the framework's inbox for later promotion. Use when a ticket closes, after a session that corrected the overlay or the framework, or when the user asks to capture learnings."
+description: "Turn what was learned during a ticket or session into overlay updates: project-specific facts go into the client's .ai/ overlay, generic lessons go (anonymised) into the framework's inbox for later promotion. Use when a ticket closes, after a session that corrected the overlay or the framework, or when the user asks to capture learnings."
 argument-hint: "[TICKET-ID]"
 ---
 
@@ -11,9 +11,10 @@ argument-hint: "[TICKET-ID]"
 ## Purpose
 
 Keep the client overlay and the framework improving from real work,
-without breaking client isolation or letting unreviewed AI notes become
-project truth. Every change is proposed with its evidence and applied
-only after the user approves it.
+without breaking client isolation or letting unchecked AI notes become
+project truth. Every change carries its evidence and is either approved
+by the user first or, in direct mode, written straight away and checked
+by an independent reviewer (steps 5 and 8).
 
 ## When to Use
 
@@ -81,22 +82,43 @@ only after the user approves it.
    same lesson: if one exists, increment its `seen`, update `last_seen`
    and add an anonymised evidence line; otherwise create one per
    [`inbox/README.md`](../../inbox/README.md).
-5. **Present everything before writing**: the proposed overlay diffs, the
-   inbox items as they will be written, and the dropped candidates with
-   reasons. **Wait for the user's approval**; apply only what they
-   approve.
+5. **Apply according to the overlay's write mode** (`overlay.write_mode`
+   in `.ai/manifest.yaml`; `propose` when unset):
+   - `propose`: present the overlay diffs, the inbox items as they will
+     be written, and the dropped candidates with reasons. **Wait for the
+     user's approval** and apply only what they approve.
+   - `direct`: write the project updates and inbox items straight away,
+     without asking. After writing inbox items, run
+     `python3 $DATA_ENGINEERING_AI_SRC/tests/validate_framework.py` and
+     fix what it reports. Start the check in step 8, carry on with the
+     user's work, and list what was written in a few lines.
 6. **Version the overlay.** Find out how the overlay is versioned before
    writing: committed in the client repository (`.ai/` changes show in
    its `git status`), its own repository (`git -C .ai rev-parse
    --show-toplevel` is not the client repository root), or not versioned
-   (warn the user). In its own repository, commit the approved changes
-   there with a message naming the ticket. In the client repository,
+   (warn the user, unless the overlay records that this is by choice). In
+   its own repository, commit the applied changes there with a message
+   naming the ticket. In the client repository,
    leave them uncommitted for the user's normal change process.
 7. **Close the loop.** Tick each processed Learning Candidate in the
    ticket note and record where it went (`→ .ai/STANDARDS.md`,
    `→ inbox/<file>`, `→ dropped: <reason>`). Set `overlay.last_learning_capture`
    in `.ai/manifest.yaml` to today's date, the current client commit and
    the ticket ID.
+8. **Independent check (direct mode only).** Start the
+   [Reviewer](../../agents/reviewer.agent.md) as a background subagent
+   with the list of files written and this checklist:
+   - every new or changed statement cites evidence and carries an O/I/U
+     label; nothing is stated as fact without evidence;
+   - nothing contradicts another overlay document, and wrong statements
+     were corrected in place rather than contradicted;
+   - no secrets, tokens, or tenant, workspace or connection IDs, and no
+     URLs the overlay forbids;
+   - inbox items contain no client names, ticket prefixes, people, IDs,
+     URLs, or table, column or item names.
+
+   When it reports, fix its findings directly and tell the user in one
+   line what changed. Ticket-note log lines need no review.
 
 ## Decision Criteria
 
@@ -109,16 +131,16 @@ only after the user approves it.
 
 ## Evidence Required
 
-Every proposed change cites where the lesson came from. Framework items
+Every change cites where the lesson came from. Framework items
 cite anonymised evidence only.
 
 ## Output Format
 
 ```text
-## Project Updates (proposed diffs, with evidence)
-## Framework Inbox Items (as they will be written)
+## Project Updates (with evidence)
+## Framework Inbox Items
 ## Dropped (with reasons)
-## Applied (after approval: files changed, overlay commit if any)
+## Applied (files changed, overlay commit if any, reviewer result)
 ```
 
 ## Quality Checks
@@ -128,7 +150,9 @@ cite anonymised evidence only.
 - No secret, token or tenant, workspace or connection ID was written
   anywhere.
 - Every processed Learning Candidate is ticked with its destination.
-- Nothing was written before the user approved it.
+- In propose mode, nothing was written before the user approved it. In
+  direct mode, every write was listed for the user and checked by the
+  reviewer.
 
 ## Common Failure Modes
 
@@ -140,6 +164,9 @@ cite anonymised evidence only.
   will not see them.
 - Appending a new statement that contradicts an existing one instead of
   correcting the original.
+- In direct mode, writing a guess as a fact because nobody approves it
+  first. Without an approval step the evidence rule matters more, not
+  less.
 
 ## Escalation / Specialist Handoff
 

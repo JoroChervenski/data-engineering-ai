@@ -189,9 +189,11 @@ The framework improves from real work in two loops:
 1. **Per task.** `/ticket` records learning candidates in the ticket note
    as they happen. At close, the
    [`capture-learnings`](skills/capture-learnings/SKILL.md) skill
-   proposes project facts for the client's `.ai/` overlay and anonymised,
-   generic lessons for [`inbox/`](inbox/README.md). Nothing is written
-   without approval.
+   turns them into project facts for the client's `.ai/` overlay and
+   anonymised, generic lessons for [`inbox/`](inbox/README.md). The
+   overlay's `write_mode` decides whether these wait for approval
+   (`propose`, the default) or are written straight away and checked by a
+   background reviewer (`direct`).
 2. **Across tasks.** In this repository, inbox items are promoted into
    agents, skills, standards, templates or commands once they meet the
    promotion rule (seen three times, prevents a Critical/High failure, or

@@ -48,6 +48,9 @@ notes:
   runbooks: ".ai/runbooks"
 
 overlay:
+  # propose: overlay updates wait for the user's approval (default).
+  # direct: updates are written straight away, then checked by a reviewer.
+  write_mode: "propose"
   bootstrapped:
     date: "unknown" # YYYY-MM-DD
     commit: "unknown" # client repository commit the overlay was built from

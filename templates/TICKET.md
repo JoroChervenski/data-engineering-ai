@@ -32,6 +32,11 @@ not here as assumptions.>
 <The approved implementation plan (implementation-plan output), and the
 date and person that approved it.>
 
+## Review
+
+<Verdict and findings of the independent review (/review-pr, or /ticket
+step 7), most severe first, with the date and the commit reviewed.>
+
 ## Decisions
 
 - <YYYY-MM-DD> <decision>: <why> (<who decided>)
