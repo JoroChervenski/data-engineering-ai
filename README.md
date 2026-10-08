@@ -182,6 +182,27 @@ project's container mounts only its own `Projects/<Project>/` folder (read/write
 framework repository may read `Knowledge/` and `Templates/` only. The full requirements are in
 the Project Standard's notes, starting with `Project Standard.md`.
 
+## Working on the framework in a container
+
+This repository has its own Dev Container ([`.devcontainer/`](.devcontainer/)). It mounts the
+vault's `Knowledge/` and `Templates/` folders read-only and nothing else: no `Projects/`, no
+`Home.md`, no client repositories. So an agent working here can read the Project Standard but cannot
+reach any client's notes or code.
+
+```bash
+export AI_VAULT=/path/to/your/vault   # the folder with Knowledge/, Templates/ and Projects/
+code .                                # then Reopen in Container
+```
+
+Inside it, `python3 tests/validate_framework.py` and `python3 -m unittest discover -s tests` run
+as usual, and the test that compares the pinned standard snapshot with the real standard is active
+(`KNOWLEDGE_DIR` is set). `DATA_ENGINEERING_AI_SRC` points at the workspace, for `capture-learnings`.
+Claude Code's login lives in a Docker volume for this container only. The image is the client
+template's Dockerfile, so the base image is pinned in one place.
+
+Because the container cannot see client repositories or `Projects/`, run `scripts/new-client.sh` in a
+host terminal instead.
+
 ## Implementation status
 
 **Phase 1 — Foundation, with task-driven Phase 2 improvements (current).**

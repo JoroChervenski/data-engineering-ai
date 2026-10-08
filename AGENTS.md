@@ -78,7 +78,8 @@ dimensional modelling. See [README.md](README.md) for the full picture.
     vault's `Projects/` folder or `Home.md`; project facts live in the
     client repository and its own vault folder. Do not run
     `scripts/new-client.sh` yourself: the person creating a project runs it
-    on the host.
+    on the host. The Dev Container in `.devcontainer/` enforces this by
+    mounting only those two folders, read-only.
 
 ## Current phase
 
