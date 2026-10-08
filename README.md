@@ -21,7 +21,8 @@ repositories without ever mixing client context between them.
 - Not a fully automated deployment system. Production-changing operations
   stay human-controlled until that is explicitly changed in a later phase.
 - Not a finished platform. This repository currently implements **Phase 1 —
-  Foundation** only (see [Implementation status](#implementation-status)).
+  Foundation** plus task-driven Phase 2 improvements (see
+  [Implementation status](#implementation-status)).
 
 ## Architecture
 
@@ -30,7 +31,7 @@ Five logical layers, from the user-facing surface down to concrete tools:
 ```mermaid
 flowchart TD
     A[Experience Layer\nVS Code + Chat + Commands + Git Diff] --> B
-    B[Orchestration Layer\nOrchestrator + Context Builder + Router + Review Gate] --> C
+    B[Orchestration Layer\nOrchestration skill + Context Builder + Router + Review Gate] --> C
     C[Agent Layer\nRoles: Architect, Repository Analyst, Data Engineer, Reviewer, ...] --> D
     D[Skill Layer\nReusable procedures: discovery, Kimball review, testing, PR, ...] --> E
     E[Tool Layer\nGit, GitHub/Azure DevOps, Fabric, Azure, SQL, Power BI, CI/CD]
@@ -170,7 +171,7 @@ Not yet implemented (by design — see the roadmap below):
 
 - Deeper behaviour for the remaining agents and skills (Phase 2, driven
   by inbox items rather than up front).
-- Specialist agents beyond the Phase 1 five, e.g. Fabric Architect, SQL
+- Specialist agents beyond the four core agents, e.g. Fabric Architect, SQL
   Specialist, Spark Specialist, Semantic Model Specialist, Security
   Reviewer, Production Reliability Reviewer, DevOps Agent, PR Agent
   (Phase 3).

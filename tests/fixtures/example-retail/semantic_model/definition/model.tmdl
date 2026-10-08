@@ -1,0 +1,10 @@
+model Model
+	culture: en-US
+
+ref table fact_sales
+ref table dim_customer
+
+relationship fact_sales_to_dim_customer
+	fromColumn: fact_sales.customer_id
+	toColumn: dim_customer.customer_id
+	crossFilteringBehavior: bothDirections

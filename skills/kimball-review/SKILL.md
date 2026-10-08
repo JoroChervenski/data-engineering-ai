@@ -55,7 +55,9 @@ hurt correctness, maintainability or semantic-model performance.
 7. Review date/time dimension design and its semantic-model compatibility.
 8. Check for the anti-patterns listed below.
 
-## Decision Criteria — Anti-Patterns to Flag
+## Decision Criteria
+
+Flag these anti-patterns:
 
 - Mixed grain within a single fact table.
 - Snowflaking without a stated justification.

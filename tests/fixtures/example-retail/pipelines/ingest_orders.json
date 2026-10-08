@@ -1,0 +1,9 @@
+{
+  "name": "ingest_orders",
+  "schedule": { "frequency": "daily" },
+  "activities": [
+    { "name": "run_bronze_orders", "type": "Notebook", "notebook": "notebooks/bronze_orders.py", "dependsOn": [] },
+    { "name": "run_silver_orders", "type": "Notebook", "notebook": "notebooks/silver_orders.py", "dependsOn": ["run_bronze_orders"] },
+    { "name": "build_gold", "type": "Script", "scripts": ["sql/gold/dim_customer.sql", "sql/gold/fact_sales.sql"], "dependsOn": ["run_silver_orders"] }
+  ]
+}

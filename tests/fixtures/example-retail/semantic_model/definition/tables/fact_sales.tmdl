@@ -1,0 +1,21 @@
+table fact_sales
+
+	measure 'Total Sales' = SUM(fact_sales[line_amount])
+
+	column order_id
+		dataType: string
+		sourceColumn: order_id
+
+	column customer_id
+		dataType: string
+		sourceColumn: customer_id
+
+	column line_amount
+		dataType: decimal
+		sourceColumn: line_amount
+
+	partition fact_sales = entity
+		mode: directLake
+		source
+			entityName: fact_sales
+			schemaName: gold
