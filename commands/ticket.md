@@ -45,8 +45,11 @@ with the same ID resumes from where the note says the work stopped.
 0. **Locate the note.** Read the overlay's note conventions (`AGENTS.md`,
    `.ai/manifest.yaml` `notes.tickets`; default `.ai/tickets/`). The note
    is `<TICKET-ID>.md`. If it exists, read it, report its status and last
-   log entry, and resume at the matching step below. Statuses are those
-   of [`templates/TICKET.md`](../templates/TICKET.md) unless the overlay
+   log entry, and resume at the matching step below. If it has
+   uncommitted changes from an interrupted session, commit them first
+   (see "Committing the note" below) as `<TICKET-ID>: changes from an
+   interrupted session`. Statuses are those of
+   [`templates/TICKET.md`](../templates/TICKET.md) unless the overlay
    defines its own.
 1. **Intake** (new ticket). Create the note from
    [`templates/TICKET.md`](../templates/TICKET.md), following the
@@ -87,6 +90,22 @@ under Learning Candidates as soon as the user corrects something, or an
 overlay fact proves wrong or missing. The conversation may be gone by
 step 9; the note will not.
 
+**Committing the note.** At the end of every step that changed the note,
+commit it, when the overlay has its own Git repository (how to tell:
+[`capture-learnings`](../skills/capture-learnings/SKILL.md), step 6).
+Commit the note's path only, with a message naming the ticket and the
+step, for example `ABC-123: plan approved`:
+
+```bash
+git -C <overlay> add -- <note>
+git -C <overlay> commit -m "<TICKET-ID>: <step>" -- <note>
+```
+
+These commits need no separate approval: they are local, touch only the
+note, and give it a history. If the overlay is committed in the client
+repository instead, leave the note uncommitted for the user's normal
+change process. If the overlay is not versioned at all, say so once.
+
 ## Expected Output
 
 Per step: what was done, what the note now says, and the next gate or
@@ -98,6 +117,9 @@ step. At the end, the PR description and the capture-learnings summary.
   (step 3). The ticket note itself is the only exception.
 - Approval of the plan is not approval to commit, push, open a PR,
   deploy, or run anything against a cloud environment.
+- The only commits this command makes without asking are the ticket-note
+  commits above, in an overlay that has its own repository. Nothing is
+  committed in the client repository unless the user asks.
 - The overlay's critical constraints and approval gates apply at every
   step, and win over this command where they are stricter.
 - No secrets, tokens or tenant, workspace or connection IDs in the note.
