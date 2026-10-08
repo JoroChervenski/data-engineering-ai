@@ -68,7 +68,9 @@ either skips its own approval gates or stops after planning.
    - before anything the overlay names as a separate human approval
      gate;
    - before a commit, push, PR creation or any remote or cloud
-     operation, and only within the permissions the user has configured;
+     operation, and only within the permissions the user has configured.
+     The one exception: [`/ticket`](../../commands/ticket.md) commits its
+     own ticket note to an overlay kept in its own repository;
    - when two specialists disagree, or a recommendation conflicts with
      the overlay.
 
