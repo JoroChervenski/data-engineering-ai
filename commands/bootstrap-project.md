@@ -56,16 +56,24 @@ framework's templates, grounded in the repository's actual state.
 8. Agree with the user how the overlay is versioned: committed in the
    client repository (the default), or kept out of it (for example in a
    personal notes folder). An overlay kept out of the client repository
-   needs its own Git repository, so that later edits by
+   should have its own Git repository, unless the user chooses to keep it
+   unversioned, so that later edits by
    [`capture-learnings`](../skills/capture-learnings/SKILL.md) have a
-   history and can be undone.
-9. Present the proposed overlay to the user for review before committing
-   it — this command proposes; a human (or an explicit follow-up
-   instruction) commits.
+   history and can be undone. Agree also whether overlay updates are
+   proposed for approval first (`propose`, the default) or written
+   straight away (`direct`), and record it as `overlay.write_mode` in the
+   manifest.
+9. A first bootstrap is always presented to the user for review before
+   it is written or committed. Later runs on an existing overlay follow
+   its `overlay.write_mode`: `propose` presents the changes first;
+   `direct` writes them, lists what changed, and runs the independent
+   check from [`capture-learnings`](../skills/capture-learnings/SKILL.md)
+   step 8. Committing follows the versioning agreed in step 8.
 
 ## Expected Output
 
-A proposed `.ai/` overlay and root `AGENTS.md`, each clearly marking
+The `.ai/` overlay and root `AGENTS.md` (proposed, or written in direct
+mode), each clearly marking
 Observed vs. Inferred vs. Unknown content, plus a short list of open
 questions the bootstrap could not resolve from the repository alone.
 
@@ -77,8 +85,9 @@ questions the bootstrap could not resolve from the repository alone.
 - Never include secrets, tenant/subscription IDs, or real client data
   beyond what is already appropriately present in the repository being
   bootstrapped.
-- Does not commit on its own; the proposed files are presented for
-  review first.
+- Does not commit on its own. Files are presented for review first,
+  except updates to an existing overlay in `direct` mode, which are
+  written and then checked by the reviewer.
 
 ## Request
 

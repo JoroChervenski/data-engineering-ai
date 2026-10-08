@@ -33,6 +33,10 @@ production risk.
    [`kimball-review`](../skills/kimball-review/SKILL.md).
 4. Assess test adequacy via [`testing`](../skills/testing/SKILL.md).
 5. Aggregate findings, most severe first, with an overall recommendation.
+6. If the change belongs to a ticket that has a note in the overlay
+   (see [`/ticket`](ticket.md), step 0), write the verdict and the
+   findings into the note's Review section, with the date, the commit
+   reviewed and a dated Log line.
 
 ## Expected Output
 
@@ -43,8 +47,9 @@ overall recommendation: ready to proceed / needs changes / blocked.
 
 ## Safety Constraints
 
-- Read-only. This command never modifies the diff/branch, approves, or
-  merges anything.
+- Read-only for the code under review: it never modifies the
+  diff/branch, approves, or merges anything. The ticket note (step 6) is
+  the only file it writes.
 - Any committed secret is reported as Critical without exception.
 
 ## Request

@@ -37,6 +37,11 @@ changing any files.
    [Architect agent](../agents/architect.agent.md) before finalizing the
    plan.
 5. Return the plan. Do not implement it as part of this command.
+6. If the request names a ticket and the overlay keeps ticket notes
+   (see [`/ticket`](ticket.md), step 0), write the plan into that
+   ticket's note under Plan, marked not approved, with a dated Log line.
+   Create the note from [`templates/TICKET.md`](../templates/TICKET.md)
+   if it is missing.
 
 ## Expected Output
 
@@ -47,8 +52,8 @@ Deployment Considerations, Open Questions.
 
 ## Safety Constraints
 
-- No files are changed by this command under any circumstance — it only
-  produces a plan.
+- No file in the client repository is changed — this command only
+  produces a plan. The ticket note (step 6) is the only file it writes.
 - Affected files/components listed must have actually been located in
   the repository, not guessed.
 
