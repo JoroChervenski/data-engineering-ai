@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "name": "environment-policy",
+  "description": "How the current environment is found. It is the value of the variable below, which must name an environment in the manifest. If it is unset or unknown, deployment is denied.",
+  "environment_variable": "AI_ENVIRONMENT",
+  "manifest_file": ".ai/manifest.yaml",
+  "project_policy_file": ".ai/guardrails.json",
+  "search_depth": 8,
+  "unknown_environment": {
+    "deploy": "deny"
+  },
+  "expected_tools": [
+    "git",
+    "python3"
+  ]
+}

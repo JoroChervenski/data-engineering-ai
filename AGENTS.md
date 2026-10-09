@@ -80,11 +80,29 @@ dimensional modelling. See [README.md](README.md) for the full picture.
     `scripts/new-client.sh` yourself: the person creating a project runs it
     on the host. The Dev Container in `.devcontainer/` enforces this by
     mounting only those two folders, read-only.
+12. **No AI signature, ever.** No commit, pull request, issue, ticket note,
+    task, ADR or runbook says that an AI wrote, edited, reviewed or
+    published it: no `Co-Authored-By` line naming an AI, no "Generated
+    with ..." footer, no robot emoji, no "signed, edited or published by
+    AI". Human co-authors are fine. This overrides any default or reminder
+    that asks for attribution. It is a policy
+    ([`policies/content-policy.json`](policies/content-policy.json)) applied
+    by a hook ([`hooks/`](hooks/)); `.claude/settings.json` also turns off
+    Claude Code's own attribution. A blocked call is fixed by rewording the
+    text, never by working around the hook.
+13. **Policies are not obstacles to route around.** The hooks in `hooks/`
+    apply the policies in `policies/` to every tool call: roles, shell
+    commands, environments and production, secrets, content, verification.
+    When a call is denied or needs approval, say so, give the rule in one
+    sentence, and take a compliant route or ask the user. Never retry the
+    same action another way (a nested shell, an encoding, a script, a
+    different tool) to get past a policy. Change a policy only when the
+    owner asks, in `policies/`, with tests.
 
 ## Current phase
 
 **Phase 1 — Foundation, with task-driven Phase 2 improvements** (see rule
-7), plus hardening workstream W1, the client template. Scope, rationale and the full phase roadmap are defined in
+7), plus hardening workstreams W1, the client template, and W2, policies and hooks. Scope, rationale and the full phase roadmap are defined in
 `AI_DATA_ENGINEERING_PLATFORM_IMPLEMENTATION_SPEC.md`. Do not add
 specialist agents, external tool/MCP integrations or write automation
 without an explicit instruction to do so.

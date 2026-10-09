@@ -81,6 +81,22 @@ class TemplateTest(unittest.TestCase):
         self.assertEqual(sorted(cfg), sorted(std["repo"]["sync_config"]["keys"]))
         self.assertEqual(std["repo"]["sync_config"]["file"], ".ai/vault-sync.json")
 
+    def test_a_new_repo_carries_the_no_ai_signature_rule(self):
+        target = self.create("Demo", "demo-repo")
+        settings = json.loads((target / ".claude/settings.json").read_text())
+        self.assertEqual(settings["attribution"], {"commit": "", "pr": "", "sessionUrl": False})
+        self.assertIn("No AI signature", (target / "AGENTS.md").read_text())
+
+    def test_a_new_repo_explains_and_supports_the_policies(self):
+        target = self.create("Demo", "demo-repo")
+        self.assertIn("AI_ENVIRONMENT=", (target / ".env.example").read_text().splitlines())
+        readme = (target / "README.md").read_text()
+        for part in ("## Policies", "AI_ENVIRONMENT", "secrets.allow_paths", "audit/decisions.jsonl"):
+            self.assertIn(part, readme)
+        manifest = (target / ".ai/manifest.yaml").read_text()
+        self.assertIn("environments:", manifest)
+        self.assertIn("write_access", manifest)
+
     def test_no_placeholder_is_left(self):
         target = self.create("Demo", "demo-repo")
         for rel in files_under(target):
@@ -103,7 +119,8 @@ class TemplateTest(unittest.TestCase):
         version = (ROOT / "VERSION").read_text().strip()
         self.assertRegex(version, r"^\d+\.\d+\.\d+$")
         self.assertRegex(manifest, rf'framework:\n  version: "{re.escape(version)}"')
-        self.assertRegex(manifest, r'standard:\n  version: "0\.1\.0"')
+        standard_version = json.loads((SNAPSHOT / "Project Standard" / "standard.json").read_text())["version"]
+        self.assertRegex(manifest, rf'standard:\n  version: "{re.escape(standard_version)}"')
         self.assertIn("allow_force_push: false", manifest)
 
     def test_the_vault_layout_is_built_at_creation(self):
@@ -131,13 +148,14 @@ class TemplateTest(unittest.TestCase):
         repo = settings["extraKnownMarketplaces"][marketplace["name"]]["source"]["repo"]
         self.assertTrue(plugin["repository"].endswith("/" + repo))
 
-    def test_guardrails_use_the_policy_vocabulary(self):
+    def test_guardrails_hold_project_additions_in_the_policy_vocabulary(self):
         target = self.create("Demo", "demo-repo")
         guardrails = json.loads((target / ".ai/guardrails.json").read_text())
         self.assertEqual(set(guardrails["commands"]), {"deny", "approval_required"})
-        self.assertIn("git push --force", guardrails["commands"]["deny"])
-        self.assertIn("git push", guardrails["commands"]["approval_required"])
+        self.assertEqual(guardrails["default_role"], "developer")
         self.assertFalse(guardrails["production"]["shell_write_operations"])
+        self.assertTrue(guardrails["production"]["deployment_requires_explicit_approval"])
+        self.assertEqual(guardrails["secrets"], {"allow_paths": []})
 
     # --- isolation and secrets ---------------------------------------------------------------
 

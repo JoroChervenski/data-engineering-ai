@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "name": "capability-policy",
+  "description": "What each role may do. A role's shell mode decides which command classes it may run; 'deploy' says whether it may run deploy commands. A project can make a role stricter, never looser.",
+  "default_role": "developer",
+  "unknown_agent_role": "developer",
+  "agent_prefixes": [
+    "data-engineering-ai:"
+  ],
+  "agent_roles": {
+    "architect": "architect",
+    "repository-analyst": "architect",
+    "Explore": "architect",
+    "Plan": "architect",
+    "reviewer": "reviewer",
+    "verifier": "verifier",
+    "data-engineer": "developer",
+    "general-purpose": "developer",
+    "deployer": "deployer"
+  },
+  "roles_selectable_as_project_default": [
+    "architect",
+    "reviewer",
+    "verifier",
+    "developer"
+  ],
+  "roles": {
+    "architect": {
+      "read": true,
+      "write": false,
+      "shell": {
+        "mode": "read_only"
+      },
+      "deploy": false
+    },
+    "developer": {
+      "read": true,
+      "write": true,
+      "shell": {
+        "mode": "development"
+      },
+      "deploy": "approval_required_non_production"
+    },
+    "reviewer": {
+      "read": true,
+      "write": false,
+      "shell": {
+        "mode": "verification"
+      },
+      "deploy": false
+    },
+    "verifier": {
+      "read": true,
+      "write": false,
+      "shell": {
+        "mode": "verification"
+      },
+      "deploy": false
+    },
+    "deployer": {
+      "read": true,
+      "write": false,
+      "shell": {
+        "mode": "deployment"
+      },
+      "deploy": "approval_required"
+    }
+  },
+  "shell_modes": {
+    "read_only": {
+      "read": "allow",
+      "test": "deny",
+      "lint": "deny",
+      "dev": "deny",
+      "install": "deny",
+      "network": "deny",
+      "remote_write": "deny",
+      "deploy": "deny",
+      "privileged": "deny",
+      "sql_write": "deny",
+      "destructive": "deny",
+      "secret": "deny",
+      "unknown": "deny"
+    },
+    "verification": {
+      "read": "allow",
+      "test": "allow",
+      "lint": "allow",
+      "dev": "deny",
+      "install": "deny",
+      "network": "deny",
+      "remote_write": "deny",
+      "deploy": "deny",
+      "privileged": "deny",
+      "sql_write": "deny",
+      "destructive": "deny",
+      "secret": "deny",
+      "unknown": "deny"
+    },
+    "development": {
+      "read": "allow",
+      "test": "allow",
+      "lint": "allow",
+      "dev": "allow",
+      "install": "ask",
+      "network": "none",
+      "remote_write": "ask",
+      "deploy": "ask",
+      "privileged": "ask",
+      "sql_write": "ask",
+      "destructive": "deny",
+      "secret": "deny",
+      "unknown": "none"
+    },
+    "deployment": {
+      "read": "allow",
+      "test": "allow",
+      "lint": "allow",
+      "dev": "deny",
+      "install": "deny",
+      "network": "none",
+      "remote_write": "ask",
+      "deploy": "ask",
+      "privileged": "ask",
+      "sql_write": "ask",
+      "destructive": "deny",
+      "secret": "deny",
+      "unknown": "ask"
+    }
+  },
+  "write_allowed_for_read_only_roles": [
+    "${scratchpad_dir}/**",
+    "/tmp/**"
+  ],
+  "approval_paths": [
+    "**/*.tf",
+    "**/*.tfvars",
+    "**/*.bicep",
+    "**/infra/**",
+    "**/infrastructure/**",
+    "**/.github/workflows/**",
+    "**/azure-pipelines*.yml",
+    "**/migrations/**",
+    "**/*.ddl"
+  ],
+  "self_protection_paths": [
+    "**/.claude/settings.json",
+    "**/.claude/settings.local.json",
+    "**/.ai/guardrails.json",
+    "**/.devcontainer/**",
+    "**/hooks/hooks.json",
+    "**/hooks/*.py",
+    "**/policies/*.json",
+    "**/.claude/plugins/**"
+  ],
+  "restricted_mcp_tools": "^mcp__.*(?:create|update|edit|add|comment|post|submit|merge|publish|write|delete|run)"
+}

@@ -67,8 +67,8 @@ The default Python has no PyYAML, `jsonschema` or `pytest`.
    Promptfoo is a second layer.
 10. **Graphify and Obsidian.** The repo's doctrine is "Git is the system of record". Both must stay
     non-authoritative, and each is an external tool that [AGENTS.md](../AGENTS.md) rule 7 gates.
-11. **Read-only is not enforced.** The three read-only agents have `Bash`, which can write. This is
-    the main reason for W2.
+11. **Read-only is not enforced.** The three read-only agents have `Bash`, which can write. Resolved in W2: the
+    hook denies file edits and mutating commands for the architect, reviewer and verifier roles.
 
 ## 4. Unknowns
 
@@ -83,10 +83,16 @@ Checked against the Claude Code documentation on 2026-10-08:
 - **Permission rules: answered.** `Read(~/...)` and `Read(!pattern)` work in deny rules; Bash rules match
   command text only, so they are not a security boundary. Deny is checked before ask, ask before allow.
 
-Still unverified, and blocking W2 role enforcement:
+Hooks, checked against the Claude Code documentation on 2026-10-09:
 
-- How a `PreToolUse` hook learns which subagent or role is calling.
-- Whether a plugin can ship hooks, and where they are declared.
+- **Role enforcement (W2): answered.** A `PreToolUse` hook receives `agent_id` and `agent_type` when the call
+  comes from a subagent, so "reviewer cannot edit source" is enforceable. Calls from the main conversation
+  carry no agent type and get the session's default role. Not confirmed: whether a plugin agent's
+  `agent_type` is `reviewer` or `data-engineering-ai:reviewer`; the hook should accept both.
+- **Plugin-shipped hooks (W2): answered.** A plugin can ship `hooks/hooks.json`, with scripts at
+  `${CLAUDE_PLUGIN_ROOT}`. A subagent's own frontmatter can also carry hooks that run only while it runs.
+- **Decisions and blocking:** exit code 2 blocks; a JSON `permissionDecision` of allow, deny or ask is
+  preferred. A blocking hook beats an allow rule, and deny and ask rules still apply when a hook allows.
 
 ## 5. Decisions
 
@@ -105,7 +111,12 @@ Still unverified, and blocking W2 role enforcement:
    `scripts/vault_sync.py`, the `/vault-sync` command, and tests. The requirements it implements are in the
    Project Standard in the vault's `Knowledge/` folder, not here.
 3. Minimal CI: `validate.yml` running the validator and the unit tests. Not started.
-4. W2, policy engine and hooks. Not started.
+4. **W2, policies and hooks: implemented.** `policies/` (command, capability, environment, production, secret,
+   content, verification), `hooks/` (PreToolUse, PostToolUse and its failure event, SessionStart, Stop), role
+   enforcement from `agent_type`, a shell parser, project guardrails that can only tighten, a redacted audit log,
+   and the project requirements in the Project Standard (`PS-POL`). Not done: JSON schemas for the policy files
+   (W4, needs a validator decision), a verifier agent (W3), and enforcement of the policies for tools other
+   than Bash, file tools and MCP.
 5. W3, verifier and evals. Not started.
 6. W4, `VERSION` tag, `CHANGELOG`, `evals.yml`, `release.yml`, rollback docs. Not started.
 7. README update at the end.
@@ -116,7 +127,10 @@ Also not done: a Dev Container for this framework repository itself, mounting on
 
 ## 7. What W1 added or changed
 
-Added: `templates/client-project/`, `scripts/new-client.sh`, `scripts/new_client.py`,
+W2 added `policies/`, `hooks/` (engine, shell parser, four hook scripts), `tests/test_w2_engine.py`,
+`tests/test_w2_hooks.py`, `tests/test_content_policy.py` and the `PS-POL` requirements in the Project Standard.
+
+W1 added `templates/client-project/`, `scripts/new-client.sh`, `scripts/new_client.py`,
 `scripts/vault_sync.py`, `commands/vault-sync.md`, `VERSION`, `tests/test_vault_sync.py`,
 `tests/test_client_template.py`, `tests/devcontainer_rules.py`, `tests/fixtures/standard/`.
 

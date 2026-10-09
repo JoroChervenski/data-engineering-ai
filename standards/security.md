@@ -65,7 +65,10 @@ Design and reason about external tool access using these levels:
 | L2 | Push branch / create remote PR |
 | L3 | Change/deploy cloud environments |
 
-Use the lowest level a task actually requires. Phase 1 of this framework
+Use the lowest level a task actually requires. The framework enforces these
+levels with policies applied by hooks (see
+[Policies and hooks](../README.md#policies-and-hooks)): read maps to L0, local
+changes to L1, pushes and remote writes to L2, deployment to L3. Phase 1 of this framework
 only uses L0 and L1. Production deployment (L3) stays human-controlled
 until that is explicitly changed in a later phase.
 

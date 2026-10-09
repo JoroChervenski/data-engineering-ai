@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "name": "production-policy",
+  "description": "Production is read-only by default. An environment with write_access false in the manifest is production-like; so is any command that names production.",
+  "production_tokens_regex": "(?<![A-Za-z0-9])(?:prod|production|prd|live)(?![A-Za-z0-9])",
+  "shell_write_operations": false,
+  "deployment_requires_explicit_approval": true,
+  "production_changing_examples": [
+    "cloud resource creation, update or deletion",
+    "deployment",
+    "schema mutation",
+    "data deletion",
+    "a Git release operation that triggers deployment"
+  ]
+}

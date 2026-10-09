@@ -87,6 +87,7 @@ to the actual diff/test run/review output.
 - Technical changes match the real diff, file for file.
 - Any open Critical/High finding from review appears under Risks.
 - The description does not claim tests ran if they did not.
+- It carries no AI signature or attribution of any kind (see `AGENTS.md`, rule 12).
 
 ## Common Failure Modes
 

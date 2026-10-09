@@ -69,3 +69,11 @@ must follow, and how the overlay itself is versioned (committed here, or
 its own repository). Tickets run through `/ticket <TICKET-ID>`; lessons
 are recorded at close with the `capture-learnings` skill.>
 
+## 12. Rules that always apply
+
+These come from the framework's policies and are not project facts. Do not remove them.
+
+- **No AI signature.** No commit, pull request, issue, ticket note, task, ADR or runbook says that an AI
+  wrote, edited, reviewed or published it: no `Co-Authored-By` line naming an AI, no "Generated with ..."
+  footer, no robot emoji, no "signed, edited or published by AI". Human co-authors are fine. The framework
+  blocks this with a hook, and `.claude/settings.json` turns off Claude Code's own attribution.

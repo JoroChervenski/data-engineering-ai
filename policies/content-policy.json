@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "name": "content-policy",
+  "rules": {
+    "no_ai_signature": {
+      "id": "CP-01",
+      "description": "No commit, pull request, issue, ticket or task stores a sign that an AI wrote, edited, reviewed or published it. Human co-authors are fine.",
+      "message": "Policy CP-01 (no AI signature): remove \"{matched}\" from this {where}. Commits, pull requests, issues, tickets and tasks must not say an AI wrote, edited, reviewed or published them. Do not add a Co-Authored-By line for an AI or a 'Generated with' footer; write the text without them.",
+      "patterns": [
+        {
+          "name": "ai-co-author-trailer",
+          "regex": "co-authored-by:\\s*(?:claude|anthropic|chatgpt|openai|copilot|gemini|gpt\\b|an?\\s+ai\\b|(?-i:AI)\\s+(?:assistant|agent|bot)|llm\\b)"
+        },
+        {
+          "name": "ai-vendor-address",
+          "regex": "<[^>\\n]*@(?:[\\w-]+\\.)*(?:anthropic|openai)\\.com>"
+        },
+        {
+          "name": "generated-with-footer",
+          "regex": "generated\\s+(?:with|by|using)\\s+\\[?\\s*(?:claude|anthropic|chatgpt|openai|copilot|gemini|gpt\\b|an?\\s+ai\\b|(?-i:AI)\\b|artificial\\s+intelligence)"
+        },
+        {
+          "name": "sign-off-by-ai",
+          "regex": "\\b(?:signed|edited|published|written|authored|created|reviewed|approved|drafted|committed|submitted|merged|opened|closed|updated|fixed|resolved|implemented|produced|posted|assisted|prepared|refactored|developed|built|co-?written)(?:[- ]off)?[- ]+by[:\\s]+(?:an?\\s+)?(?:claude|anthropic|chatgpt|openai|copilot|gemini|gpt[- ]?\\d*|(?-i:AI)\\b(?!\\s+(?:governance|team|board|committee|council|office|lead|group|ethics|act|policy))|an?\\s+ai\\b|artificial\\s+intelligence|llm\\b)"
+        },
+        {
+          "name": "claude-code-link",
+          "regex": "claude\\.(?:com|ai)/(?:claude-)?code"
+        },
+        {
+          "name": "robot-emoji",
+          "regex": "\\U0001F916"
+        }
+      ]
+    }
+  },
+  "scope": {
+    "bash_publishing_commands": [
+      "git\\s+(?:-[cC]\\s+\\S+\\s+)*(?:commit|tag|merge|revert|notes|cherry-pick)\\b",
+      "gh\\s+pr\\s+(?:create|edit|comment|review|merge|ready|close|reopen)\\b",
+      "gh\\s+issue\\s+(?:create|edit|comment|close|reopen|transfer|pin)\\b",
+      "gh\\s+(?:release|gist)\\s+(?:create|edit)\\b",
+      "gh\\s+api\\b",
+      "az\\s+(?:repos|boards|devops|pipelines)\\b",
+      "glab\\b"
+    ],
+    "files": [
+      "**/.ai/tickets/**",
+      "**/.ai/adr/**",
+      "**/.ai/runbooks/**",
+      "**/.git/COMMIT_EDITMSG"
+    ],
+    "mcp_tools": "^mcp__.*(?:create|update|edit|add|comment|post|submit|merge|publish|write)"
+  }
+}

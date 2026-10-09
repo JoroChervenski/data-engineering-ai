@@ -58,12 +58,33 @@ vault folder and the Claude login also survive.
    mirrors them read-only into `Projects/__PROJECT__/` in the vault, following the Project Standard.
    Use `--dry-run` to preview.
 
+## Policies
+
+The framework plugin applies its policies through hooks, in every session of this repo:
+
+- **Roles.** This conversation acts as the developer. Subagents act as their own role: the architect, reviewer
+  and verifier cannot modify files; only the deployer may deploy, and only with your approval.
+- **Commands.** Destructive commands (force-push, `git reset --hard`, `rm -rf /`, `DROP DATABASE`, piping a
+  download into a shell) are denied. Pushes, package installs, SQL changes and deployments ask you first.
+- **Environment.** Set `AI_ENVIRONMENT` in `.env` to an environment listed under `environments` in
+  `.ai/manifest.yaml`. While it is empty or unknown, deployment is denied. An environment with
+  `write_access: false` is read-only for shell writes.
+- **Secrets.** `.env`, `~/.ssh`, `~/.azure`, `~/.config/gh`, `credentials*` and `secrets*` are never read or
+  printed. `.env.example` is fine. To allow one narrow, safe file, list it under `secrets.allow_paths` in
+  `.ai/guardrails.json`; credential stores cannot be allowed.
+- **Verification.** After you change source files, the session cannot finish until a test or lint run passes.
+- **No AI signature** in commits, pull requests, tickets or tasks.
+
+Every denial and approval request is logged, with credentials hidden and file contents left out, in the plugin's
+data folder (`audit/decisions.jsonl`).
+
 ## Guardrails
 
 - `.claude/settings.json` denies reading secret files, force-push and hard reset, and asks before a push.
   These are permission rules, not a security boundary: the container's mounts are.
-- `.ai/guardrails.json` holds the same intent in machine-readable form for the framework's policy engine.
-  That engine is not built yet, so until then it only documents what is intended.
+- `.ai/guardrails.json` holds this project's additions to the framework policies: more denied or approval-required
+  commands, a more restricted default role, approved verification commands, and narrow secret exceptions. It can only
+  add restrictions. If it is invalid it is ignored as a whole and the environment is treated as unknown.
 
 ## Versions
 

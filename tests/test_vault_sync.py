@@ -22,6 +22,7 @@ import vault_sync  # noqa: E402
 SNAPSHOT = ROOT / "tests" / "fixtures" / "standard"
 TODAY = "2026-01-02"
 PROJECT, REPO = "Demo", "demo-repo"
+STANDARD_VERSION = json.loads((SNAPSHOT / "Project Standard" / "standard.json").read_text())["version"]
 
 
 def tree(root):
@@ -117,7 +118,7 @@ class VaultSyncTest(unittest.TestCase):
         self.env.sync()
         for rel in (f"{PROJECT}.md", "_Conventions.md"):
             meta, _ = vault_sync.split_frontmatter(self.env.note(rel))
-            self.assertEqual(meta["standard_version"], "0.1.0", rel)
+            self.assertEqual(meta["standard_version"], STANDARD_VERSION, rel)
             self.assertIn("standard_commit", meta, rel)
         self.assertIn(f"[[Projects/{PROJECT}/_Conventions|_Conventions]]", self.env.note(f"{PROJECT}.md"))
 
@@ -330,7 +331,7 @@ class VaultSyncTest(unittest.TestCase):
         self.env.populate()
         code, out, err = self.run_main()
         self.assertEqual(code, 0, err)
-        self.assertIn("standard 0.1.0", out)
+        self.assertIn(f"standard {STANDARD_VERSION}", out)
 
     def test_cli_exits_2_with_a_message_on_error(self):
         shutil.rmtree(self.env.knowledge / "Project Standard")

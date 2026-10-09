@@ -203,6 +203,52 @@ template's Dockerfile, so the base image is pinned in one place.
 Because the container cannot see client repositories or `Projects/`, run `scripts/new-client.sh` in a
 host terminal instead.
 
+## Policies and hooks
+
+A rule the framework enforces, not just states, is data in [`policies/`](policies/) and is applied by hooks
+in [`hooks/`](hooks/) that Claude Code runs around every tool call. They ship with the plugin, so they apply in
+every client container that has it. Decisions come from code and data, never from asking a model.
+
+| Policy | What it decides |
+|---|---|
+| [`command-policy.json`](policies/command-policy.json) | What a shell command is (read, test, deploy, destructive, ...) and whether it is allowed, needs approval, or is denied |
+| [`capability-policy.json`](policies/capability-policy.json) | What each role may do with each kind of command, and with files |
+| [`environment-policy.json`](policies/environment-policy.json) | How the current environment is found (`AI_ENVIRONMENT` and the manifest); unknown means no deployment |
+| [`production-policy.json`](policies/production-policy.json) | What counts as production: read-only by default, deployment only with explicit approval |
+| [`secret-policy.json`](policies/secret-policy.json) | Paths no tool may read, print or change: `.env`, `~/.ssh`, `~/.azure`, `~/.config/gh`, `credentials*`, `secrets*`, keys |
+| [`content-policy.json`](policies/content-policy.json) | **No AI signature** in commits, pull requests, issues, ticket notes or tasks; human co-authors are fine |
+| [`verification-policy.json`](policies/verification-policy.json) | Source edits need a passing test or lint run before the session may finish |
+
+| Hook | Runs | Job |
+|---|---|---|
+| `PreToolUse` | before Bash, file and MCP tools | Parse the command, find the role and environment, apply the policies; deny, ask, or stay silent; log denials and asks |
+| `PostToolUse` / `PostToolUseFailure` | after a tool | Check an edited file still parses; note source edits; record whether a test or lint run passed |
+| `SessionStart` | session begins | Tell Claude the project, versions, branch, role, environment, whether production writes are allowed, and missing tools |
+| `Stop` | Claude is about to finish | Block once if source changed since the last passing test or lint run; summarise uncommitted changes |
+
+**Roles.** The main conversation acts as the developer. A subagent acts as its own role: the architect (also
+repository-analyst, Explore, Plan), reviewer, verifier, data-engineer (developer) or deployer. A project can make the
+default role stricter in `.ai/guardrails.json`, never looser.
+
+| Kind of command | architect | reviewer, verifier | developer | deployer |
+|---|---|---|---|---|
+| read (`git status`, `ls`, `grep`) | allow | allow | allow | allow |
+| test, lint (`pytest`, `ruff check`) | deny | allow | allow | allow |
+| change local files or Git (`git commit`, `mkdir`, edits) | deny | deny | allow | deny |
+| install packages, `sudo`, SQL changes, `git push`, `gh pr create` | deny | deny | ask | ask |
+| deploy (`terraform apply`, `az deployment`, `kubectl apply`) | deny | deny | ask in a known non-production environment, else deny | ask, production included |
+| destructive (`git push --force`, `rm -rf /`, `DROP DATABASE`, `curl \| bash`), printing credentials | deny | deny | deny | deny |
+| unknown command or script | deny | deny | normal permission prompt | ask |
+
+A denial says which rule applied and why; the fix is to change the command, never to work around the hook. Every
+denial and approval request is written to `audit/decisions.jsonl` in the plugin's data folder, with credentials hidden
+and file contents left out. If the policies cannot be loaded, the hooks fall back to a small built-in baseline and
+ask. A malformed `.ai/guardrails.json` is ignored as a whole and the environment is treated as unknown.
+
+The hooks are a second layer, not a sandbox: they see what Claude Code's tools do, and cannot see inside a script or
+`python -c`. The container's mounts remain the hard boundary. Claude Code's own automatic commit and pull-request
+attribution is also turned off in `.claude/settings.json` (here and in every new client repo).
+
 ## Implementation status
 
 **Phase 1 — Foundation, with task-driven Phase 2 improvements (current).**
@@ -216,7 +262,8 @@ Phase 2 so far: orchestration moved into the main conversation, the
 
 Hardening workstream W1, the client template, adds a project template, a creation
 script and a vault sync that follow the Project Standard (see
-[Creating a client project](#creating-a-client-project)). W2 to W4 are not started; see
+[Creating a client project](#creating-a-client-project)). W2, the policies and hooks, is implemented (see
+[Policies and hooks](#policies-and-hooks)); W3 and W4 are not started. See
 [`docs/workstream-gap-analysis.md`](docs/workstream-gap-analysis.md).
 
 Not yet implemented (by design — see the roadmap below):

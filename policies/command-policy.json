@@ -1,0 +1,2189 @@
+{
+  "schema_version": 1,
+  "name": "command-policy",
+  "description": "Classifies each simple shell command. A rule has a decision (allow, approval_required, deny) and a class; the capability policy then decides what each role may do with each class.",
+  "combined_short_programs": [
+    "rm",
+    "git",
+    "ls",
+    "cp",
+    "mv",
+    "chmod",
+    "chown",
+    "chgrp",
+    "grep",
+    "egrep",
+    "fgrep",
+    "tar",
+    "sed",
+    "head",
+    "tail",
+    "sort",
+    "du",
+    "df",
+    "ps",
+    "docker",
+    "npm",
+    "pip",
+    "pip3",
+    "env",
+    "set",
+    "export",
+    "declare",
+    "typeset",
+    "curl",
+    "wget"
+  ],
+  "sql_clients": [
+    "sqlcmd",
+    "psql",
+    "mysql",
+    "mariadb",
+    "sqlite3",
+    "spark-sql",
+    "beeline",
+    "bq",
+    "snowsql",
+    "duckdb",
+    "usql",
+    "clickhouse-client",
+    "sqlplus",
+    "pgcli",
+    "mycli",
+    "isql"
+  ],
+  "interpreters": [
+    "sh",
+    "bash",
+    "zsh",
+    "dash",
+    "ksh"
+  ],
+  "runner_wrappers": [
+    "poetry",
+    "uv",
+    "pipenv",
+    "pdm",
+    "hatch",
+    "rye"
+  ],
+  "wrappers": {
+    "sudo": {
+      "privileged": true,
+      "flag_values": [
+        "-u",
+        "-g",
+        "-h",
+        "-p",
+        "-C",
+        "-D",
+        "-R",
+        "-T",
+        "--user",
+        "--group"
+      ]
+    },
+    "doas": {
+      "privileged": true,
+      "flag_values": [
+        "-u",
+        "-C"
+      ]
+    },
+    "env": {
+      "flag_values": [
+        "-u",
+        "-C",
+        "-S"
+      ],
+      "assignments": true
+    },
+    "nohup": {},
+    "time": {},
+    "command": {},
+    "builtin": {},
+    "exec": {},
+    "setsid": {},
+    "unbuffer": {},
+    "nice": {
+      "flag_values": [
+        "-n"
+      ]
+    },
+    "ionice": {
+      "flag_values": [
+        "-c",
+        "-n",
+        "-p"
+      ]
+    },
+    "timeout": {
+      "flag_values": [
+        "-s",
+        "-k",
+        "--signal",
+        "--kill-after"
+      ],
+      "positional_skip": 1
+    },
+    "stdbuf": {},
+    "xargs": {
+      "flag_values": [
+        "-n",
+        "-I",
+        "-L",
+        "-P",
+        "-d",
+        "-a",
+        "-E",
+        "-s"
+      ]
+    },
+    "watch": {
+      "flag_values": [
+        "-n",
+        "-d"
+      ]
+    }
+  },
+  "value_flags": {
+    "git": [
+      "-C",
+      "-c",
+      "--git-dir",
+      "--work-tree",
+      "--namespace",
+      "--super-prefix",
+      "--exec-path"
+    ],
+    "gh": [
+      "-R",
+      "--repo",
+      "-H",
+      "--hostname"
+    ],
+    "kubectl": [
+      "-n",
+      "--namespace",
+      "--context",
+      "--kubeconfig",
+      "-f",
+      "--filename",
+      "-l",
+      "--selector",
+      "-o",
+      "--output",
+      "-c",
+      "--container"
+    ],
+    "helm": [
+      "-n",
+      "--namespace",
+      "--kube-context",
+      "-f",
+      "--values",
+      "--set",
+      "--version"
+    ],
+    "az": [
+      "--subscription",
+      "-g",
+      "--resource-group",
+      "-n",
+      "--name",
+      "-l",
+      "--location",
+      "-o",
+      "--output",
+      "--query",
+      "--parameters",
+      "-p",
+      "--template-file",
+      "-f"
+    ],
+    "terraform": [
+      "-var",
+      "-var-file",
+      "-target",
+      "-out",
+      "-state",
+      "-chdir"
+    ],
+    "docker": [
+      "-f",
+      "--file",
+      "-H",
+      "--host",
+      "--context",
+      "-e",
+      "--env",
+      "-v",
+      "--volume",
+      "-p",
+      "--publish"
+    ]
+  },
+  "privileged_rule": {
+    "id": "CMD-A40",
+    "class": "privileged",
+    "decision": "approval_required",
+    "reason": "Running as another user (sudo, su) changes the machine."
+  },
+  "privileged_programs": [
+    "su"
+  ],
+  "pipeline_rules": [
+    {
+      "id": "CMD-D30",
+      "class": "destructive",
+      "decision": "deny",
+      "reason": "Piping a download into a shell or interpreter runs unreviewed code.",
+      "from_programs": [
+        "curl",
+        "wget",
+        "fetch",
+        "http",
+        "https"
+      ],
+      "to_programs": [
+        "sh",
+        "bash",
+        "zsh",
+        "dash",
+        "ksh",
+        "python",
+        "python3",
+        "perl",
+        "ruby",
+        "node",
+        "php",
+        "sudo",
+        "su"
+      ]
+    }
+  ],
+  "raw_rules": [
+    {
+      "id": "CMD-D11",
+      "class": "destructive",
+      "decision": "deny",
+      "reason": "Fork bomb.",
+      "regex": ":\\(\\)\\s*\\{\\s*:\\s*\\|\\s*:"
+    },
+    {
+      "id": "CMD-D31",
+      "class": "destructive",
+      "decision": "deny",
+      "reason": "Running a downloaded script through command substitution runs unreviewed code.",
+      "regex": "\\b(?:ba|z|da|k)?sh\\b[^\\n;&|]*(?:\\$\\(|<\\(|`)\\s*(?:curl|wget)\\b"
+    }
+  ],
+  "destructive_fallback_regex": [
+    "\\brm\\s+-[a-zA-Z]*[rR][a-zA-Z]*\\s+(?:--\\s+)?(?:/|~|\\$HOME)(?=[\\s/\\\"']|$)",
+    "\\bgit\\s+push\\b[^\\n]*(?:--force|\\s-f\\b|\\s\\+)",
+    "\\bgit\\s+reset\\s+--hard\\b",
+    "\\bDROP\\s+(?:DATABASE|SCHEMA)\\b",
+    ":\\(\\)\\s*\\{",
+    "\\bmkfs\\b",
+    "\\bcurl\\b[^\\n|]*\\|\\s*(?:sudo\\s+)?(?:ba|z)?sh\\b"
+  ],
+  "rules": [
+    {
+      "id": "CMD-D01",
+      "class": "destructive",
+      "decision": "deny",
+      "reason": "Force-pushing rewrites remote history.",
+      "program": "git",
+      "positionals": [
+        "push"
+      ],
+      "flags_any": [
+        "--force",
+        "-f",
+        "--force-with-lease",
+        "--force-if-includes",
+        "--mirror",
+        "--delete",
+        "-d"
+      ]
+    },
+    {
+      "id": "CMD-D02",
+      "class": "destructive",
+      "decision": "deny",
+      "reason": "A '+' refspec force-pushes.",
+      "program": "git",
+      "positionals": [
+        "push"
+      ],
+      "args_regex": "(?:^|\\s)\\+[^\\s-]\\S*"
+    },
+    {
+      "id": "CMD-D03",
+      "class": "destructive",
+      "decision": "deny",
+      "reason": "git reset --hard discards work.",
+      "program": "git",
+      "positionals": [
+        "reset"
+      ],
+      "flags_any": [
+        "--hard"
+      ]
+    },
+    {
+      "id": "CMD-D04",
+      "class": "destructive",
+      "decision": "deny",
+      "reason": "git clean -f deletes untracked files.",
+      "program": "git",
+      "positionals": [
+        "clean"
+      ],
+      "flags_any": [
+        "-f",
+        "--force"
+      ]
+    },
+    {
+      "id": "CMD-D05",
+      "class": "destructive",
+      "decision": "deny",
+      "reason": "Force-deleting a branch loses commits.",
+      "program": "git",
+      "positionals": [
+        "branch"
+      ],
+      "flags_any": [
+        "-D"
+      ]
+    },
+    {
+      "id": "CMD-D06",
+      "class": "destructive",
+      "decision": "deny",
+      "reason": "This rewrites or erases Git history.",
+      "program": "git",
+      "positionals_any": [
+        [
+          "filter-branch"
+        ],
+        [
+          "stash",
+          "clear"
+        ],
+        [
+          "update-ref"
+        ],
+        [
+          "reflog",
+          "expire"
+        ],
+        [
+          "reflog",
+          "delete"
+        ]
+      ]
+    },
+    {
+      "id": "CMD-D07",
+      "class": "destructive",
+      "decision": "deny",
+      "reason": "Pruning objects immediately cannot be undone.",
+      "program": "git",
+      "positionals": [
+        "gc"
+      ],
+      "args_regex": "--prune=now"
+    },
+    {
+      "id": "CMD-D08",
+      "class": "destructive",
+      "decision": "deny",
+      "reason": "Recursive delete of a system or home root.",
+      "program": "rm",
+      "flags_any": [
+        "-r",
+        "-R",
+        "--recursive"
+      ],
+      "targets_regex": "^(?:/|/\\*|~/?|\\$\\{?HOME\\}?/?|\\.\\./?|/(?:etc|usr|var|bin|sbin|lib|lib64|boot|dev|home|root|opt|srv|mnt|proc|sys)(?:/\\*?)?)$"
+    },
+    {
+      "id": "CMD-D09",
+      "class": "destructive",
+      "decision": "deny",
+      "reason": "Writing to or formatting a block device destroys data.",
+      "program_regex": "^(?:mkfs(?:\\..+)?|fdisk|sfdisk|cfdisk|parted|wipefs)$"
+    },
+    {
+      "id": "CMD-D10",
+      "class": "destructive",
+      "decision": "deny",
+      "reason": "dd to a device destroys data.",
+      "program": "dd",
+      "args_regex": "\\bof=/dev/"
+    },
+    {
+      "id": "CMD-D12",
+      "class": "destructive",
+      "decision": "deny",
+      "reason": "Recursive permission or owner change on a system root.",
+      "program": [
+        "chmod",
+        "chown",
+        "chgrp"
+      ],
+      "flags_any": [
+        "-R",
+        "--recursive"
+      ],
+      "targets_regex": "^(?:/|/\\*|~/?|\\$\\{?HOME\\}?/?|\\.\\./?|/(?:etc|usr|var|bin|sbin|lib|lib64|boot|dev|home|root|opt|srv|mnt|proc|sys)(?:/\\*?)?)$"
+    },
+    {
+      "id": "CMD-D13",
+      "class": "destructive",
+      "decision": "deny",
+      "reason": "DROP DATABASE / DROP SCHEMA destroys data.",
+      "program": [
+        "sqlcmd",
+        "psql",
+        "mysql",
+        "mariadb",
+        "sqlite3",
+        "spark-sql",
+        "beeline",
+        "bq",
+        "snowsql",
+        "duckdb",
+        "usql",
+        "clickhouse-client",
+        "sqlplus",
+        "pgcli",
+        "mycli",
+        "isql"
+      ],
+      "args_regex": "\\bDROP\\s+(?:DATABASE|SCHEMA)\\b"
+    },
+    {
+      "id": "CMD-D14",
+      "class": "secret",
+      "decision": "deny",
+      "reason": "This prints environment variables, which can include injected credentials.",
+      "program": [
+        "printenv",
+        "compgen"
+      ]
+    },
+    {
+      "id": "CMD-D15",
+      "class": "secret",
+      "decision": "deny",
+      "reason": "A bare 'env' or 'set' prints every variable, including injected credentials.",
+      "program": [
+        "env",
+        "set"
+      ],
+      "extra_max": 0,
+      "flags_none": [
+        "-e",
+        "-u",
+        "-x",
+        "-o",
+        "+e",
+        "+x",
+        "-eu",
+        "-euo"
+      ]
+    },
+    {
+      "id": "CMD-D16",
+      "class": "secret",
+      "decision": "deny",
+      "reason": "This prints environment variables, which can include injected credentials.",
+      "program": [
+        "export",
+        "declare",
+        "typeset"
+      ],
+      "flags_any": [
+        "-p",
+        "-x"
+      ]
+    },
+    {
+      "id": "CMD-D17",
+      "class": "secret",
+      "decision": "deny",
+      "reason": "This reads or prints a credential.",
+      "program": "git",
+      "positionals": [
+        "credential"
+      ]
+    },
+    {
+      "id": "CMD-D18",
+      "class": "secret",
+      "decision": "deny",
+      "reason": "This prints an access token or secret value.",
+      "program": "az",
+      "positionals_any": [
+        [
+          "account",
+          "get-access-token"
+        ],
+        [
+          "keyvault",
+          "secret",
+          "show"
+        ],
+        [
+          "keyvault",
+          "secret",
+          "download"
+        ],
+        [
+          "keyvault",
+          "key",
+          "show"
+        ]
+      ]
+    },
+    {
+      "id": "CMD-D19",
+      "class": "secret",
+      "decision": "deny",
+      "reason": "This prints an access token.",
+      "program": "gh",
+      "positionals": [
+        "auth",
+        "token"
+      ]
+    },
+    {
+      "id": "CMD-D20",
+      "class": "secret",
+      "decision": "deny",
+      "reason": "This prints an access token or secret value.",
+      "program": [
+        "aws",
+        "gcloud"
+      ],
+      "args_regex": "(?:get-secret-value|get-session-token|print-access-token|print-identity-token)"
+    },
+    {
+      "id": "CMD-D21",
+      "class": "secret",
+      "decision": "deny",
+      "reason": "Exporting secret keys.",
+      "program": "gpg",
+      "flags_any": [
+        "--export-secret-keys",
+        "--export-secret-subkeys"
+      ]
+    },
+    {
+      "id": "CMD-D22",
+      "class": "secret",
+      "decision": "deny",
+      "reason": "Reading Kubernetes secrets.",
+      "program": "kubectl",
+      "positionals": [
+        "get"
+      ],
+      "args_regex": "\\bsecrets?\\b"
+    },
+    {
+      "id": "CMD-A01",
+      "class": "remote_write",
+      "decision": "approval_required",
+      "reason": "Pushing publishes commits to a remote.",
+      "program": "git",
+      "positionals": [
+        "push"
+      ]
+    },
+    {
+      "id": "CMD-A02",
+      "class": "remote_write",
+      "decision": "approval_required",
+      "reason": "This changes something on a remote service.",
+      "program": "gh",
+      "positionals_any": [
+        [
+          "pr",
+          "create"
+        ],
+        [
+          "pr",
+          "merge"
+        ],
+        [
+          "pr",
+          "close"
+        ],
+        [
+          "pr",
+          "reopen"
+        ],
+        [
+          "pr",
+          "review"
+        ],
+        [
+          "pr",
+          "comment"
+        ],
+        [
+          "pr",
+          "edit"
+        ],
+        [
+          "pr",
+          "ready"
+        ],
+        [
+          "issue",
+          "create"
+        ],
+        [
+          "issue",
+          "close"
+        ],
+        [
+          "issue",
+          "reopen"
+        ],
+        [
+          "issue",
+          "comment"
+        ],
+        [
+          "issue",
+          "edit"
+        ],
+        [
+          "issue",
+          "delete"
+        ],
+        [
+          "release",
+          "create"
+        ],
+        [
+          "release",
+          "delete"
+        ],
+        [
+          "release",
+          "edit"
+        ],
+        [
+          "repo",
+          "create"
+        ],
+        [
+          "repo",
+          "delete"
+        ],
+        [
+          "repo",
+          "edit"
+        ],
+        [
+          "repo",
+          "rename"
+        ],
+        [
+          "repo",
+          "archive"
+        ],
+        [
+          "workflow",
+          "run"
+        ],
+        [
+          "workflow",
+          "enable"
+        ],
+        [
+          "workflow",
+          "disable"
+        ],
+        [
+          "run",
+          "rerun"
+        ],
+        [
+          "run",
+          "cancel"
+        ],
+        [
+          "secret",
+          "set"
+        ],
+        [
+          "secret",
+          "delete"
+        ],
+        [
+          "variable",
+          "set"
+        ],
+        [
+          "variable",
+          "delete"
+        ],
+        [
+          "gist",
+          "create"
+        ],
+        [
+          "gist",
+          "edit"
+        ]
+      ]
+    },
+    {
+      "id": "CMD-A03",
+      "class": "remote_write",
+      "decision": "approval_required",
+      "reason": "gh api with a method, fields or a body can change remote state.",
+      "program": "gh",
+      "positionals": [
+        "api"
+      ],
+      "flags_any": [
+        "-X",
+        "--method",
+        "-f",
+        "-F",
+        "--field",
+        "--raw-field",
+        "--input"
+      ],
+      "args_regex_none": "(?:-X|--method)[ =]GET\\b"
+    },
+    {
+      "id": "CMD-A04",
+      "class": "remote_write",
+      "decision": "approval_required",
+      "reason": "An HTTP request that sends data can change remote state.",
+      "program": [
+        "curl",
+        "wget",
+        "http",
+        "https"
+      ],
+      "flags_any": [
+        "-X",
+        "--request",
+        "-d",
+        "--data",
+        "--data-raw",
+        "--data-binary",
+        "--data-urlencode",
+        "-F",
+        "--form",
+        "-T",
+        "--upload-file",
+        "--json",
+        "--post-data",
+        "--post-file",
+        "--method"
+      ]
+    },
+    {
+      "id": "CMD-A05",
+      "class": "remote_write",
+      "decision": "approval_required",
+      "reason": "Publishing a package is public and permanent.",
+      "program_regex": "^(?:twine|npm|pnpm|yarn|cargo|gem|docker|podman)$",
+      "positionals_any": [
+        [
+          "upload"
+        ],
+        [
+          "publish"
+        ],
+        [
+          "push"
+        ]
+      ]
+    },
+    {
+      "id": "CMD-A06",
+      "class": "privileged",
+      "decision": "approval_required",
+      "reason": "This removes containers, images or volumes.",
+      "program": [
+        "docker",
+        "podman"
+      ],
+      "positionals_any": [
+        [
+          "system",
+          "prune"
+        ],
+        [
+          "volume",
+          "rm"
+        ],
+        [
+          "volume",
+          "prune"
+        ],
+        [
+          "image",
+          "prune"
+        ],
+        [
+          "rmi"
+        ],
+        [
+          "network",
+          "rm"
+        ],
+        [
+          "container",
+          "prune"
+        ]
+      ]
+    },
+    {
+      "id": "CMD-A10",
+      "class": "deploy",
+      "decision": "approval_required",
+      "reason": "This creates, changes or deletes cloud or deployed resources.",
+      "program": [
+        "terraform",
+        "tofu"
+      ],
+      "positionals_any": [
+        [
+          "apply"
+        ],
+        [
+          "destroy"
+        ],
+        [
+          "import"
+        ],
+        [
+          "taint"
+        ],
+        [
+          "untaint"
+        ],
+        [
+          "force-unlock"
+        ],
+        [
+          "refresh"
+        ],
+        [
+          "state",
+          "rm"
+        ],
+        [
+          "state",
+          "mv"
+        ],
+        [
+          "state",
+          "push"
+        ],
+        [
+          "workspace",
+          "delete"
+        ]
+      ]
+    },
+    {
+      "id": "CMD-A11",
+      "class": "deploy",
+      "decision": "approval_required",
+      "reason": "This creates, changes or deletes cloud or deployed resources.",
+      "program": "pulumi",
+      "positionals_any": [
+        [
+          "up"
+        ],
+        [
+          "destroy"
+        ],
+        [
+          "refresh"
+        ],
+        [
+          "import"
+        ],
+        [
+          "cancel"
+        ],
+        [
+          "stack",
+          "rm"
+        ]
+      ]
+    },
+    {
+      "id": "CMD-A12",
+      "class": "deploy",
+      "decision": "approval_required",
+      "reason": "This creates, changes or deletes cloud or deployed resources.",
+      "program": "az",
+      "positionals": [
+        "deployment"
+      ]
+    },
+    {
+      "id": "CMD-A13",
+      "class": "deploy",
+      "decision": "approval_required",
+      "reason": "This creates, changes or deletes cloud or deployed resources.",
+      "program": "az",
+      "positional_any_of": [
+        "create",
+        "update",
+        "delete",
+        "set",
+        "remove",
+        "add",
+        "deploy",
+        "start",
+        "stop",
+        "restart",
+        "purge",
+        "assign",
+        "move",
+        "import",
+        "upload",
+        "sync",
+        "publish",
+        "cancel",
+        "invoke",
+        "scale",
+        "swap",
+        "reset",
+        "regenerate",
+        "rotate",
+        "attach",
+        "detach",
+        "apply",
+        "patch",
+        "replace",
+        "restore",
+        "recover",
+        "failover",
+        "promote",
+        "grant",
+        "revoke",
+        "enable",
+        "disable",
+        "login"
+      ]
+    },
+    {
+      "id": "CMD-A14",
+      "class": "deploy",
+      "decision": "approval_required",
+      "reason": "This creates, changes or deletes cloud or deployed resources.",
+      "program": "kubectl",
+      "positional_any_of": [
+        "apply",
+        "create",
+        "delete",
+        "patch",
+        "replace",
+        "scale",
+        "rollout",
+        "set",
+        "edit",
+        "label",
+        "annotate",
+        "taint",
+        "drain",
+        "cordon",
+        "uncordon",
+        "run",
+        "expose",
+        "autoscale",
+        "cp",
+        "exec"
+      ]
+    },
+    {
+      "id": "CMD-A15",
+      "class": "deploy",
+      "decision": "approval_required",
+      "reason": "This creates, changes or deletes cloud or deployed resources.",
+      "program": "helm",
+      "positional_any_of": [
+        "install",
+        "upgrade",
+        "uninstall",
+        "delete",
+        "rollback"
+      ]
+    },
+    {
+      "id": "CMD-A16",
+      "class": "deploy",
+      "decision": "approval_required",
+      "reason": "This creates, changes or deletes cloud or deployed resources.",
+      "program": [
+        "azd",
+        "sam",
+        "cdk",
+        "serverless",
+        "sls"
+      ],
+      "positional_any_of": [
+        "up",
+        "deploy",
+        "provision",
+        "down",
+        "destroy",
+        "publish",
+        "remove"
+      ]
+    },
+    {
+      "id": "CMD-A17",
+      "class": "deploy",
+      "decision": "approval_required",
+      "reason": "This creates, changes or deletes cloud or deployed resources.",
+      "program": [
+        "aws",
+        "gcloud"
+      ],
+      "args_regex": "\\b(?:create|delete|update|put|remove|terminate|start|stop|run|invoke|deploy|cp|sync|rm|mv|rb|mb|attach|detach|modify|reboot|publish|submit|apply)\\b"
+    },
+    {
+      "id": "CMD-A18",
+      "class": "deploy",
+      "decision": "approval_required",
+      "reason": "This creates, changes or deletes cloud or deployed resources.",
+      "program": "databricks",
+      "positionals_any": [
+        [
+          "bundle",
+          "deploy"
+        ],
+        [
+          "bundle",
+          "destroy"
+        ],
+        [
+          "bundle",
+          "run"
+        ],
+        [
+          "jobs",
+          "run-now"
+        ],
+        [
+          "jobs",
+          "delete"
+        ],
+        [
+          "clusters",
+          "delete"
+        ],
+        [
+          "workspace",
+          "delete"
+        ],
+        [
+          "workspace",
+          "import"
+        ],
+        [
+          "repos",
+          "update"
+        ]
+      ]
+    },
+    {
+      "id": "CMD-A19",
+      "class": "deploy",
+      "decision": "approval_required",
+      "reason": "This creates, changes or deletes cloud or deployed resources.",
+      "program": "func",
+      "positionals": [
+        "azure",
+        "functionapp",
+        "publish"
+      ]
+    },
+    {
+      "id": "CMD-A20",
+      "class": "deploy",
+      "decision": "approval_required",
+      "reason": "This creates, changes or deletes cloud or deployed resources.",
+      "program": "sqlpackage",
+      "args_regex": "/Action:\\s*Publish"
+    },
+    {
+      "id": "CMD-A21",
+      "class": "deploy",
+      "decision": "approval_required",
+      "reason": "This creates, changes or deletes cloud or deployed resources.",
+      "program": "fab",
+      "positional_any_of": [
+        "rm",
+        "mv",
+        "cp",
+        "import",
+        "set",
+        "assign",
+        "start",
+        "stop",
+        "mkdir",
+        "deploy",
+        "ln"
+      ]
+    },
+    {
+      "id": "CMD-A22",
+      "class": "deploy",
+      "decision": "approval_required",
+      "reason": "This creates, changes or deletes cloud or deployed resources.",
+      "program": [
+        "ansible",
+        "ansible-playbook"
+      ],
+      "flags_none": [
+        "--check",
+        "-C"
+      ]
+    },
+    {
+      "id": "CMD-A07",
+      "class": "remote_write",
+      "decision": "approval_required",
+      "reason": "This opens a connection to another machine.",
+      "program": [
+        "ssh",
+        "scp",
+        "sftp",
+        "rsync",
+        "nc",
+        "ncat",
+        "telnet"
+      ]
+    },
+    {
+      "id": "CMD-A30",
+      "class": "install",
+      "decision": "approval_required",
+      "reason": "Installing system packages changes the machine.",
+      "program": [
+        "apt",
+        "apt-get",
+        "aptitude",
+        "dpkg",
+        "yum",
+        "dnf",
+        "apk",
+        "brew",
+        "snap",
+        "zypper",
+        "pacman"
+      ],
+      "positionals_none": [
+        "list",
+        "show",
+        "search",
+        "policy",
+        "depends",
+        "info"
+      ],
+      "flags_none": [
+        "-l",
+        "-s",
+        "-L",
+        "-S",
+        "--list",
+        "--status",
+        "--listfiles",
+        "--search",
+        "--version"
+      ]
+    },
+    {
+      "id": "CMD-A31",
+      "class": "install",
+      "decision": "approval_required",
+      "reason": "Global installs change the machine.",
+      "program": [
+        "npm",
+        "pnpm",
+        "yarn",
+        "pip",
+        "pip3",
+        "pipx",
+        "cargo"
+      ],
+      "flags_any": [
+        "-g",
+        "--global"
+      ]
+    },
+    {
+      "id": "CMD-A32",
+      "class": "sql_write",
+      "decision": "approval_required",
+      "reason": "This changes data or schema.",
+      "program": [
+        "sqlcmd",
+        "psql",
+        "mysql",
+        "mariadb",
+        "sqlite3",
+        "spark-sql",
+        "beeline",
+        "bq",
+        "snowsql",
+        "duckdb",
+        "usql",
+        "clickhouse-client",
+        "sqlplus",
+        "pgcli",
+        "mycli",
+        "isql"
+      ],
+      "args_regex": "\\b(?:ALTER|DROP|TRUNCATE|DELETE\\s+FROM|UPDATE|INSERT|MERGE|CREATE|GRANT|REVOKE|REPLACE)\\b"
+    },
+    {
+      "id": "CMD-R01",
+      "class": "read",
+      "decision": "allow",
+      "program": [
+        "ls",
+        "cat",
+        "head",
+        "tail",
+        "less",
+        "more",
+        "wc",
+        "grep",
+        "egrep",
+        "fgrep",
+        "rg",
+        "ag",
+        "ack",
+        "pwd",
+        "echo",
+        "printf",
+        "true",
+        "false",
+        "which",
+        "type",
+        "whoami",
+        "id",
+        "uname",
+        "date",
+        "stat",
+        "file",
+        "diff",
+        "cmp",
+        "sort",
+        "uniq",
+        "cut",
+        "tr",
+        "awk",
+        "jq",
+        "yq",
+        "basename",
+        "dirname",
+        "realpath",
+        "readlink",
+        "du",
+        "df",
+        "tree",
+        "ps",
+        "hostname",
+        "sleep",
+        "cd",
+        "test",
+        "[",
+        "[[",
+        "export",
+        "unset",
+        "alias",
+        "wait",
+        "exit",
+        "return",
+        "read",
+        "pushd",
+        "popd",
+        "nproc",
+        "uptime",
+        "md5sum",
+        "sha256sum",
+        "sha1sum",
+        "cksum",
+        "column",
+        "fold",
+        "paste",
+        "comm",
+        "join",
+        "nl",
+        "od",
+        "xxd",
+        "hexdump",
+        "strings",
+        "lsof",
+        "locale"
+      ]
+    },
+    {
+      "id": "CMD-R02",
+      "class": "read",
+      "decision": "allow",
+      "reason": "find without delete or exec is read-only.",
+      "program": "find",
+      "flags_none": [
+        "-delete",
+        "-exec",
+        "-execdir",
+        "-ok",
+        "-okdir",
+        "-fprint",
+        "-fprintf",
+        "-fls"
+      ]
+    },
+    {
+      "id": "CMD-R03",
+      "class": "read",
+      "decision": "allow",
+      "program": "sed",
+      "flags_none": [
+        "-i",
+        "--in-place"
+      ],
+      "args_regex_none": "(?:^|\\s)-[a-zA-Z]*i"
+    },
+    {
+      "id": "CMD-R04",
+      "class": "read",
+      "decision": "allow",
+      "program": "git",
+      "positionals_any": [
+        [
+          "status"
+        ],
+        [
+          "diff"
+        ],
+        [
+          "log"
+        ],
+        [
+          "show"
+        ],
+        [
+          "ls-files"
+        ],
+        [
+          "ls-tree"
+        ],
+        [
+          "rev-parse"
+        ],
+        [
+          "rev-list"
+        ],
+        [
+          "describe"
+        ],
+        [
+          "blame"
+        ],
+        [
+          "shortlog"
+        ],
+        [
+          "cat-file"
+        ],
+        [
+          "grep"
+        ],
+        [
+          "merge-base"
+        ],
+        [
+          "name-rev"
+        ],
+        [
+          "whatchanged"
+        ],
+        [
+          "diff-tree"
+        ],
+        [
+          "for-each-ref"
+        ],
+        [
+          "count-objects"
+        ],
+        [
+          "fsck"
+        ],
+        [
+          "help"
+        ],
+        [
+          "version"
+        ],
+        [
+          "reflog"
+        ],
+        [
+          "show-ref"
+        ],
+        [
+          "ls-remote"
+        ],
+        [
+          "check-ignore"
+        ],
+        [
+          "stash",
+          "list"
+        ],
+        [
+          "stash",
+          "show"
+        ],
+        [
+          "worktree",
+          "list"
+        ]
+      ]
+    },
+    {
+      "id": "CMD-R04B",
+      "class": "read",
+      "decision": "allow",
+      "reason": "Reading Git configuration.",
+      "program": "git",
+      "positionals": [
+        "config"
+      ],
+      "flags_any": [
+        "--get",
+        "--get-all",
+        "--get-regexp",
+        "--list",
+        "-l",
+        "--show-origin"
+      ]
+    },
+    {
+      "id": "CMD-R04C",
+      "class": "read",
+      "decision": "allow",
+      "program": "git",
+      "positionals": [
+        "remote"
+      ],
+      "flags_any": [
+        "-v",
+        "--verbose"
+      ]
+    },
+    {
+      "id": "CMD-R05",
+      "class": "read",
+      "decision": "allow",
+      "reason": "Listing branches, tags and remotes only reads.",
+      "program": "git",
+      "positionals_any": [
+        [
+          "branch"
+        ],
+        [
+          "tag"
+        ],
+        [
+          "remote"
+        ]
+      ],
+      "extra_max": 0,
+      "flags_none": [
+        "-D",
+        "-d",
+        "-m",
+        "-M",
+        "-c",
+        "-C",
+        "--delete",
+        "--move",
+        "--copy",
+        "-a",
+        "-f"
+      ]
+    },
+    {
+      "id": "CMD-R06",
+      "class": "read",
+      "decision": "allow",
+      "program": "git",
+      "positionals_any": [
+        [
+          "branch"
+        ],
+        [
+          "tag"
+        ]
+      ],
+      "flags_any": [
+        "-l",
+        "--list",
+        "-a",
+        "-r",
+        "-v",
+        "-vv",
+        "--show-current",
+        "--contains",
+        "--merged",
+        "--no-merged"
+      ],
+      "flags_none": [
+        "-D",
+        "-d",
+        "-m",
+        "-M",
+        "--delete",
+        "--move"
+      ]
+    },
+    {
+      "id": "CMD-R07",
+      "class": "read",
+      "decision": "allow",
+      "program": "gh",
+      "positionals_any": [
+        [
+          "pr",
+          "list"
+        ],
+        [
+          "pr",
+          "view"
+        ],
+        [
+          "pr",
+          "diff"
+        ],
+        [
+          "pr",
+          "checks"
+        ],
+        [
+          "pr",
+          "status"
+        ],
+        [
+          "issue",
+          "list"
+        ],
+        [
+          "issue",
+          "view"
+        ],
+        [
+          "issue",
+          "status"
+        ],
+        [
+          "repo",
+          "view"
+        ],
+        [
+          "run",
+          "list"
+        ],
+        [
+          "run",
+          "view"
+        ],
+        [
+          "auth",
+          "status"
+        ],
+        [
+          "release",
+          "list"
+        ],
+        [
+          "release",
+          "view"
+        ],
+        [
+          "workflow",
+          "list"
+        ],
+        [
+          "workflow",
+          "view"
+        ],
+        [
+          "search"
+        ],
+        [
+          "status"
+        ],
+        [
+          "label",
+          "list"
+        ]
+      ],
+      "flags_none": [
+        "-t",
+        "--show-token"
+      ]
+    },
+    {
+      "id": "CMD-R07B",
+      "class": "read",
+      "decision": "allow",
+      "reason": "A plain gh api request is a GET.",
+      "program": "gh",
+      "positionals": [
+        "api"
+      ],
+      "flags_none": [
+        "-X",
+        "--method",
+        "-f",
+        "-F",
+        "--field",
+        "--raw-field",
+        "--input"
+      ]
+    },
+    {
+      "id": "CMD-R08",
+      "class": "read",
+      "decision": "allow",
+      "program": "az",
+      "positional_any_of": [
+        "list",
+        "show",
+        "get",
+        "exists",
+        "query",
+        "describe",
+        "list-locations",
+        "check-name-availability",
+        "version",
+        "what-if",
+        "validate",
+        "export",
+        "diff",
+        "help",
+        "find",
+        "search",
+        "status",
+        "view",
+        "info"
+      ]
+    },
+    {
+      "id": "CMD-R09",
+      "class": "read",
+      "decision": "allow",
+      "program": "kubectl",
+      "positional_any_of": [
+        "get",
+        "describe",
+        "logs",
+        "top",
+        "explain",
+        "api-resources",
+        "api-versions",
+        "version",
+        "cluster-info",
+        "diff",
+        "events"
+      ]
+    },
+    {
+      "id": "CMD-R10",
+      "class": "read",
+      "decision": "allow",
+      "program": "helm",
+      "positional_any_of": [
+        "list",
+        "status",
+        "get",
+        "template",
+        "lint",
+        "show",
+        "search",
+        "version",
+        "history"
+      ]
+    },
+    {
+      "id": "CMD-R11",
+      "class": "read",
+      "decision": "allow",
+      "program": [
+        "terraform",
+        "tofu"
+      ],
+      "positionals_any": [
+        [
+          "show"
+        ],
+        [
+          "output"
+        ],
+        [
+          "version"
+        ],
+        [
+          "providers"
+        ],
+        [
+          "graph"
+        ],
+        [
+          "state",
+          "list"
+        ],
+        [
+          "state",
+          "show"
+        ],
+        [
+          "workspace",
+          "list"
+        ],
+        [
+          "workspace",
+          "show"
+        ]
+      ]
+    },
+    {
+      "id": "CMD-R12",
+      "class": "read",
+      "decision": "allow",
+      "program": "docker",
+      "positionals_any": [
+        [
+          "ps"
+        ],
+        [
+          "images"
+        ],
+        [
+          "inspect"
+        ],
+        [
+          "logs"
+        ],
+        [
+          "version"
+        ],
+        [
+          "info"
+        ],
+        [
+          "stats"
+        ],
+        [
+          "top"
+        ],
+        [
+          "image",
+          "ls"
+        ],
+        [
+          "container",
+          "ls"
+        ],
+        [
+          "volume",
+          "ls"
+        ],
+        [
+          "network",
+          "ls"
+        ]
+      ]
+    },
+    {
+      "id": "CMD-R13",
+      "class": "read",
+      "decision": "allow",
+      "reason": "Listing or inspecting installed packages.",
+      "program": [
+        "apt",
+        "apt-get",
+        "aptitude",
+        "dpkg",
+        "brew",
+        "snap"
+      ],
+      "positional_any_of": [
+        "list",
+        "show",
+        "search",
+        "policy",
+        "depends",
+        "info"
+      ]
+    },
+    {
+      "id": "CMD-R13B",
+      "class": "read",
+      "decision": "allow",
+      "program": "dpkg",
+      "flags_any": [
+        "-l",
+        "-s",
+        "-L",
+        "-S",
+        "--list",
+        "--status",
+        "--listfiles",
+        "--search"
+      ]
+    },
+    {
+      "id": "CMD-R14",
+      "class": "read",
+      "decision": "allow",
+      "program": [
+        "aws",
+        "gcloud"
+      ],
+      "args_regex": "\\b(?:describe|list|get|ls|head|wait|help|show|info|version|config)\\b"
+    },
+    {
+      "id": "CMD-T01",
+      "class": "test",
+      "decision": "allow",
+      "program": [
+        "pytest",
+        "py.test",
+        "unittest",
+        "doctest",
+        "tox",
+        "nox",
+        "behave",
+        "jest",
+        "vitest",
+        "phpunit",
+        "rspec",
+        "bats"
+      ]
+    },
+    {
+      "id": "CMD-T02",
+      "class": "test",
+      "decision": "allow",
+      "program": [
+        "npm",
+        "pnpm",
+        "yarn"
+      ],
+      "positionals_any": [
+        [
+          "test"
+        ],
+        [
+          "run",
+          "test"
+        ]
+      ]
+    },
+    {
+      "id": "CMD-T03",
+      "class": "test",
+      "decision": "allow",
+      "program": [
+        "go",
+        "cargo",
+        "dotnet",
+        "mvn",
+        "gradle",
+        "sbt"
+      ],
+      "positional_any_of": [
+        "test"
+      ]
+    },
+    {
+      "id": "CMD-T04",
+      "class": "test",
+      "decision": "allow",
+      "program": "make",
+      "positional_any_of": [
+        "test",
+        "check",
+        "tests"
+      ]
+    },
+    {
+      "id": "CMD-T05",
+      "class": "test",
+      "decision": "allow",
+      "program": "dbt",
+      "positional_any_of": [
+        "test",
+        "parse",
+        "compile",
+        "ls",
+        "list"
+      ]
+    },
+    {
+      "id": "CMD-L01",
+      "class": "lint",
+      "decision": "allow",
+      "program": "ruff",
+      "positionals_none": [
+        "format"
+      ],
+      "flags_none": [
+        "--fix",
+        "--fix-only",
+        "--unsafe-fixes",
+        "--add-noqa"
+      ]
+    },
+    {
+      "id": "CMD-L02",
+      "class": "lint",
+      "decision": "allow",
+      "program": "ruff",
+      "positionals": [
+        "format"
+      ],
+      "flags_any": [
+        "--check",
+        "--diff"
+      ]
+    },
+    {
+      "id": "CMD-L03",
+      "class": "lint",
+      "decision": "allow",
+      "program": [
+        "flake8",
+        "pylint",
+        "mypy",
+        "pyright",
+        "bandit",
+        "shellcheck",
+        "yamllint",
+        "markdownlint",
+        "hadolint",
+        "tflint",
+        "actionlint",
+        "codespell",
+        "vulture",
+        "pydocstyle",
+        "pycodestyle",
+        "pyflakes"
+      ]
+    },
+    {
+      "id": "CMD-L04",
+      "class": "lint",
+      "decision": "allow",
+      "program": [
+        "black",
+        "isort",
+        "autopep8",
+        "yapf",
+        "prettier"
+      ],
+      "flags_any": [
+        "--check",
+        "--diff",
+        "--check-only",
+        "-c",
+        "--list-different"
+      ]
+    },
+    {
+      "id": "CMD-L05",
+      "class": "lint",
+      "decision": "allow",
+      "program": "eslint",
+      "flags_none": [
+        "--fix"
+      ]
+    },
+    {
+      "id": "CMD-L06",
+      "class": "lint",
+      "decision": "allow",
+      "program": "tsc",
+      "flags_any": [
+        "--noEmit"
+      ]
+    },
+    {
+      "id": "CMD-L07",
+      "class": "lint",
+      "decision": "allow",
+      "program": "sqlfluff",
+      "positional_any_of": [
+        "lint",
+        "parse"
+      ]
+    },
+    {
+      "id": "CMD-L08",
+      "class": "lint",
+      "decision": "allow",
+      "program": [
+        "terraform",
+        "tofu"
+      ],
+      "positionals_any": [
+        [
+          "validate"
+        ],
+        [
+          "plan"
+        ]
+      ]
+    },
+    {
+      "id": "CMD-L08B",
+      "class": "lint",
+      "decision": "allow",
+      "program": [
+        "terraform",
+        "tofu"
+      ],
+      "positionals": [
+        "fmt"
+      ],
+      "flags_any": [
+        "-check",
+        "-diff"
+      ]
+    },
+    {
+      "id": "CMD-L09",
+      "class": "lint",
+      "decision": "allow",
+      "program": "pre-commit",
+      "positional_any_of": [
+        "validate-config",
+        "validate-manifest"
+      ]
+    },
+    {
+      "id": "CMD-V01",
+      "class": "dev",
+      "decision": "allow",
+      "reason": "Changing local files or the local Git state.",
+      "program": "git",
+      "fallback": true
+    },
+    {
+      "id": "CMD-V02",
+      "class": "dev",
+      "decision": "allow",
+      "reason": "Changing local files.",
+      "program": [
+        "mkdir",
+        "touch",
+        "cp",
+        "mv",
+        "rm",
+        "rmdir",
+        "ln",
+        "chmod",
+        "tee",
+        "patch",
+        "truncate",
+        "install",
+        "sed",
+        "dos2unix",
+        "unix2dos",
+        "chown",
+        "chgrp"
+      ],
+      "fallback": true
+    },
+    {
+      "id": "CMD-V03",
+      "class": "dev",
+      "decision": "allow",
+      "reason": "Installing project dependencies.",
+      "program": [
+        "pip",
+        "pip3",
+        "pipx",
+        "uv",
+        "poetry",
+        "pdm",
+        "hatch",
+        "npm",
+        "pnpm",
+        "yarn",
+        "bun",
+        "cargo",
+        "go",
+        "gem",
+        "bundle",
+        "composer",
+        "dotnet",
+        "mvn",
+        "gradle",
+        "sbt",
+        "make"
+      ],
+      "fallback": true
+    },
+    {
+      "id": "CMD-V04",
+      "class": "dev",
+      "decision": "allow",
+      "reason": "Formatting or fixing files in place.",
+      "program": [
+        "ruff",
+        "black",
+        "isort",
+        "autopep8",
+        "yapf",
+        "prettier",
+        "eslint",
+        "terraform",
+        "tofu",
+        "dbt",
+        "sqlfluff",
+        "pre-commit"
+      ],
+      "fallback": true
+    },
+    {
+      "id": "CMD-V05",
+      "class": "network",
+      "decision": "allow",
+      "reason": "A plain download or request.",
+      "program": [
+        "curl",
+        "wget",
+        "http",
+        "https"
+      ],
+      "fallback": true
+    }
+  ]
+}

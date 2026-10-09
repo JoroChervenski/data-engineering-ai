@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "name": "verification-policy",
+  "description": "Source edits need a passing test or lint run before the session may finish. Docs and overlay notes do not.",
+  "required_after_edits_to": [
+    "**/*.py",
+    "**/*.sql",
+    "**/*.sh",
+    "**/*.ps1",
+    "**/*.ipynb",
+    "**/*.tf",
+    "**/*.bicep",
+    "**/*.json",
+    "**/*.yaml",
+    "**/*.yml",
+    "**/*.toml",
+    "**/*.ts",
+    "**/*.js",
+    "**/*.scala",
+    "**/*.cs",
+    "**/*.go"
+  ],
+  "exempt": [
+    "**/.ai/**",
+    "**/docs/**",
+    "**/*.md",
+    "**/tests/fixtures/**",
+    "**/.claude/**",
+    "${scratchpad_dir}/**",
+    "/tmp/**"
+  ],
+  "satisfied_by_classes": [
+    "test",
+    "lint"
+  ]
+}

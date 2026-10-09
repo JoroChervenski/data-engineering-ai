@@ -1,14 +1,19 @@
 {
   "schema_version": 1,
+  "default_role": "developer",
   "commands": {
-    "deny": ["git push --force", "git push -f", "git reset --hard", "rm -rf /"],
-    "approval_required": ["git push", "terraform apply", "az deployment", "kubectl apply"]
+    "deny": [],
+    "approval_required": []
   },
   "production": {
     "shell_write_operations": false,
     "deployment_requires_explicit_approval": true
   },
   "secrets": {
-    "protected_paths": ["~/.ssh/", "~/.azure/", "~/.config/gh/", ".env", ".env.*", "credentials*", "secrets*"]
-  }
+    "allow_paths": []
+  },
+  "verification": {
+    "commands": []
+  },
+  "expected_tools": ["git", "python3"]
 }
